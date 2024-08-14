@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 import logging, logging.handlers
 
 # https://kb.synology.com/en-uk/DSM/tutorial/Set_up_Python_virtual_environment_on_NAS
@@ -24,3 +24,7 @@ def hellox():
     # https://api.twitter.com/2/openapi.json
 
     return "Hello, X!"
+@app.route("/template")
+def template():
+
+    return render_template('index.html')
