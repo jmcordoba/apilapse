@@ -26,3 +26,12 @@ source .venv/bin/activate
 pip3 install -r requirements.txt
 ```
 
+# PyLint
+Execute the following command to get a report of the quality of one python script:
+````
+pylint app.py
+```
+Execute the following command to get a report of the quality of all the python scripts of a concrete directory:
+````
+find . -type f -name "*.py" | xargs pylint 
+```
