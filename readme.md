@@ -35,3 +35,14 @@ Execute the following command to get a report of the quality of all the python s
 ```
 find . -type f -name "*.py" | xargs pylint 
 ```
+
+# Test
+You can run tests by executing the following command inside the container:
+* All tests:
+```
+python3 -m unittest discover -v
+```
+* Specific test:
+```
+python3 -m unittest test/test_infra/test_shared.py
+```
