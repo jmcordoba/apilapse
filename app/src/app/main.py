@@ -8,8 +8,14 @@ class AppMain:
     def __init__(self):
         pass
 
-    def main(self, a, b):
+    def sum(self, a, b):
         """
         blablabla
         """
         return a+b
+
+    def min(self, a, b):
+        """
+        blablabla
+        """
+        return a-b
