@@ -11,6 +11,7 @@ logging==0.4.9.6
 MarkupSafe==2.1.5
 mccabe==0.7.0
 platformdirs==4.2.2
+PyJWT==2.9.0
 pylint==3.2.6
 tomlkit==0.13.2
 Werkzeug==3.0.3
