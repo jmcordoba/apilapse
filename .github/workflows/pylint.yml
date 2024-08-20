@@ -23,4 +23,5 @@ jobs:
         pylint $(git ls-files '*.py')
     - name: Executing Unit Tests
       run: |
+        cd app
         python -m unittest discover -v
