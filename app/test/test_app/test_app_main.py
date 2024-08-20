@@ -1,3 +1,6 @@
+"""
+blablabla
+"""
 import unittest
 
 from src.app.main import AppMain
@@ -6,6 +9,9 @@ from src.app.main import AppMain
 class TestAppMain(unittest.TestCase):
 
     def test_main(self):
+        """
+        blablabla
+        """
         
         app_main = AppMain()
         
