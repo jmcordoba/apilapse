@@ -8,10 +8,10 @@ blablabla
 #from flask import Flask, render_template
 from flask import Flask, jsonify, make_response
 #, request, send_file, redirect, url_for, Response, has_request_context
-from flask_cors import CORS
+#from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+#CORS(app)
 
 @app.route("/")
 def hello():
@@ -25,6 +25,7 @@ def hello():
     #logger.info('message from main module')
     return "Hello, World!"
 
+'''
 @app.route("/x", methods=['GET'])
 def hellox():
     """
@@ -36,6 +37,7 @@ def hellox():
         "message" : "Data Structures and Algorithms", 
     }
     return make_response(jsonify(data), 200)
+'''
 
 #@app.route("/template")
 #def template():
