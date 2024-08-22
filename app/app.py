@@ -5,7 +5,8 @@ blablabla
 """
 #import logging
 #import logging.handlers
-from flask import Flask, render_template
+#from flask import Flask, render_template
+from flask import Flask
 
 app = Flask(__name__)
 
@@ -29,14 +30,11 @@ def hellox():
     # https://api.twitter.com/2/openapi.json
     return "Hello, X!"
 
-@app.route("/template")
-def template():
-    """
-    blablabla
-    """
-    return render_template('index.html')
+#@app.route("/template")
+#def template():
+    #return render_template('index.html')
 
 if __name__ == "__main__":
     # Only for debugging while developing
-    #app.run(host='0.0.0.0', debug=True, port=8080)
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True, port=8080)
+    #app.run(host='0.0.0.0')

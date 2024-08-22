@@ -47,18 +47,29 @@ python3 -m unittest discover -v
 python3 -m unittest test/test_infra/test_shared.py
 ```
 
+# Start in local host
+To start the flask server in local host with IP 0.0.0.0 (localhost) and port 80:
+```bash
+flask run --host=0.0.0.0 --port=80
+```
+
 # Docker commands
 
 ## Start commands
+Start just with Dockerfile:
 ```bash
 docker build -t webpy .
 docker run -p 80:8080 webpy # from localhost:80 to container:8080
-
-
+```
+Start with docker compose:
+```bash
 docker-compose up
 docker-compose up -d
+```
+Go inside the container:
+```bash
+docker ps -a
 docker exec -ti uwsgi-nginx-flask-python-sqlite-docker-example-web-1 /bin/bash
-docker stop 3fd08745f515
 ```
 
 ## Stop commands
