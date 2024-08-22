@@ -33,9 +33,9 @@ def hellox():
     """
     data={
         "code" : 15, 
-        "message" : "Data Structures and Algorithms", 
+        "message" : "Data Structures and Algorithms"
     }
-    return make_response(jsonify(data), 200)
+    return make_response(jsonify(data), 200, {'Access-Control-Allow-Origin':'*'})
 
 #@app.route("/template")
 #def template():
