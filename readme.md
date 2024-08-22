@@ -2,15 +2,15 @@
 
 
 # Get public and private keys in Synology NAS
-
+To obtain the public and private keys:
 ```bash
 ssh-keygen -t rsa
 chmod 600 ~/.ssh/id_rsa
 ```
-Now you can copy the id_rsa content and paste it in Github
+Now you can copy the id_rsa content and paste it in Github.
 
 # Install
-
+To clone and install the application:
 ```bash
 git clone git@github.com:jmcordoba/synology_flask.git
 python3 -m venv .venv
@@ -19,7 +19,7 @@ pip3 install -r requirements.txt
 ```
 
 # Update
-
+To update the application:
 ```bash
 git pull
 source .venv/bin/activate
@@ -27,17 +27,17 @@ pip3 install -r requirements.txt
 ```
 
 # PyLint
-Execute the following command to get a report of the quality of one python script:
+To get a report of the quality of one python script:
 ```bash
 pylint app.py
 ```
-Execute the following command to get a report of the quality of all the python scripts of a concrete directory:
+To get a report of the quality of all the python scripts of a concrete directory:
 ```bash
 find . -type f -name "*.py" | xargs pylint 
 ```
 
 # Test
-You can run tests by executing the following command inside the container:
+To run tests by executing the following command inside the container:
 * All tests:
 ```bash
 python3 -m unittest discover -v
@@ -66,13 +66,14 @@ Start with docker compose:
 docker-compose up
 docker-compose up -d
 ```
-Go inside the container:
+To go inside the container:
 ```bash
 docker ps -a
 docker exec -ti uwsgi-nginx-flask-python-sqlite-docker-example-web-1 /bin/bash
 ```
 
 ## Stop commands
+To stop the execution of the container
 ```bash
 docker stop $(docker ps -aq)
 docker rm $(docker ps -aq)
@@ -81,11 +82,11 @@ docker image prune -a --force
 ```
 
 ## Info
-Containers running:
+To get information of the running containers:
 ```bash
 docker ps -a
 ```
-Downloaded images:
+To get information of the downloaded images:
 ```bash
 docker images
 ```
