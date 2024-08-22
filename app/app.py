@@ -6,9 +6,9 @@ blablabla
 #import logging
 #import logging.handlers
 #from flask import Flask, render_template
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response, CORS
 #, request, send_file, redirect, url_for, Response, has_request_context
-from flask_cors import CORS
+#from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
