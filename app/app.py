@@ -8,7 +8,6 @@ blablabla
 #from flask import Flask, render_template
 from flask import Flask, jsonify, make_response
 #, request, send_file, redirect, url_for, Response, has_request_context
-#from flask_cors import CORS
 
 app = Flask(__name__)
 #CORS(app)
@@ -35,13 +34,11 @@ def hellox():
         "code" : 15, 
         "message" : "Data Structures and Algorithms"
     }
-    return make_response(jsonify(data), 200, {'Access-Control-Allow-Origin':'*'})
+    return make_response(jsonify(data),200,{'Access-Control-Allow-Origin':'*'})
 
 #@app.route("/template")
 #def template():
     #return render_template('index.html')
 
 if __name__ == "__main__":
-    # Only for debugging while developing
-    app.run(host='0.0.0.0', debug=True, port=8080)
-    #app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=False, port=8080)
