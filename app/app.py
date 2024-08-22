@@ -25,7 +25,6 @@ def hello():
     #logger.info('message from main module')
     return "Hello, World!"
 
-'''
 @app.route("/x", methods=['GET'])
 def hellox():
     """
@@ -37,7 +36,6 @@ def hellox():
         "message" : "Data Structures and Algorithms", 
     }
     return make_response(jsonify(data), 200)
-'''
 
 #@app.route("/template")
 #def template():
