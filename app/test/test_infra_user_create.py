@@ -1,3 +1,6 @@
+"""
+blablabla
+"""
 import unittest
 import os
 from unittest.mock import patch, MagicMock
@@ -5,9 +8,16 @@ from flask import Flask, request
 from src.infra.user.create import UserCreate
 
 class TestUserCreate(unittest.TestCase):
+    """
+    blablabla
+    """
 
     @patch('src.infra.user.create.Database')
     def test_insert_user(self, MockDatabase):
+        """
+        blablabla
+        """
+        
         # Create a Flask application context
         app = Flask(__name__)
         with app.app_context():
