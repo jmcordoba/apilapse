@@ -20,7 +20,7 @@ jobs:
         pip install -r app/requirements.txt
     - name: Analysing the code with pylint
       run: |
-        pylint --fail-under=9 $(git ls-files '*.py' | grep -v 'test/')
+        pylint $(git ls-files '*.py' | grep -v 'test/')
     - name: Executing Unit Tests
       run: |
         cd app
