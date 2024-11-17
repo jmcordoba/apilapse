@@ -5,13 +5,12 @@ blablabla
 """
 import json
 import os
-#import logging
-#import logging.handlers
-#from flask import Flask, render_template
+import sqlite3
 from flask import Flask, jsonify, make_response, Response, request
-#, request, send_file, redirect, url_for, has_request_context
 from src.infra.status import Status
-from src.infra.sqlite3 import Database  # Import the Database class
+from src.infra.sqlite3 import Database
+from src.infra.user.create import UserCreate
+from src.infra.user.get import UserGet
 
 app = Flask(__name__)
 #CORS(app)
@@ -57,23 +56,10 @@ def db_post():
     blablabla
     """
 
-    # Get the database name from the environment
-    database_name = os.getenv('database_name')
+    user_create = UserCreate()
+    message = user_create.insert_user()
 
-    # Initialize the database
-    db = Database("db/"+database_name)
-    db.create_connection()
-
-    # Insert a new row
-    name = request.json.get('name')
-    email = request.json.get('email')
-    insert_query = "INSERT INTO users (name, email) VALUES (?, ?)"
-    db.execute_query(insert_query, (name, email))
-
-    # Close connection
-    db.close_connection()
-
-    return jsonify({"message": "Database initialized and new row inserted"}), 200
+    return jsonify({"message": message}), 200
 
 @app.route("/db", methods=['GET'])
 def db_get():
@@ -81,21 +67,10 @@ def db_get():
     blablabla
     """
 
-    # Get the database name from the environment
-    database_name = os.getenv('database_name')
+    user_get = UserGet()
+    message = user_get.get_users()
 
-    # Initialize the database
-    db = Database("db/"+database_name)
-    db.create_connection()
-
-    # Read all rows
-    query = "SELECT * FROM users"
-    db.fetch_all(query)
-
-    # Close connection
-    db.close_connection()
-
-    return jsonify({"message": "Database successfully read"}), 200
+    return jsonify({"message": message}), 200
 
 #@app.route("/template")
 #def template():
@@ -105,36 +80,36 @@ if __name__ == "__main__":
 
     try:
         # Set the configuration file path
-        json_config = 'conf/dev.json'
+        JSON_CONFIG = 'conf/dev.json'
 
         # Load the configuration from file
-        with open(json_config, 'r') as file:
+        with open(JSON_CONFIG, 'r', encoding='utf-8') as file:
             config = json.load(file)
             for key, value in config.items():
                 os.environ[key] = value
 
-        # Get the database name from the environment
-        database_name = os.getenv('database_name')
-        print(database_name)
-        
-        # Initialize the database
-        db = Database("db/"+database_name)
+        # Get the database name from the environment and Initialize the database
+        db = Database(os.getenv('database_name'))
         db.create_connection()
 
         # Create a table if it doesn't exist
-        query = """
+        QUERY = """
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
             email TEXT NOT NULL
         );
         """
-        db.execute_query(query)
+        db.execute_query(QUERY)
 
         # Close connection
         db.close_connection()
-    except Exception as e:
-        print(f"Error initializing database: {e}")
+    except FileNotFoundError as e:
+        print(f"Configuration file not found: {e}")
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON: {e}")
+    except sqlite3.Error as e:
+        print(f"SQLite error: {e}")
 
     # Run the application
     app.run(host='0.0.0.0', debug=False, port=8080)
