@@ -6,26 +6,44 @@ blablabla
 import json
 import os
 import sqlite3
-from flask import Flask, jsonify, make_response, Response, request
+import logging
+from flask import Flask, jsonify, make_response, Response, request, current_app
 from src.infra.status import Status
 from src.infra.sqlite3 import Database
 from src.infra.user.create import UserCreate
 from src.infra.user.get import UserGet
 
 app = Flask(__name__)
-#CORS(app)
+
+# Purge the log file
+LOG_FILE = 'app.log'
+with open(LOG_FILE, 'w', encoding='utf-8'):
+    pass
+
+# Configure logging
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    handlers=[
+                        logging.FileHandler(LOG_FILE),
+                        logging.StreamHandler()
+                    ])
 
 @app.route("/")
 def hello():
     """
     blablabla
     """
-    #logger = logging.getLogger()
-    #h = logging.handlers.SysLogHandler(address=("jmcordoba.synology.me", 514), facility='user')
-    #logger.setLevel(logging.DEBUG)
-    #logger.addHandler(h)
-    #logger.info('message from main module')
-    return "Hello, World!"
+
+    current_app.logger.info('Showing the hello message')
+    current_app.logger.warning('Showing the hello message')
+    current_app.logger.debug('Showing the hello message')
+    current_app.logger.error('Showing the hello message')
+
+    data={
+        "message" : "Hello, World!"
+    }
+    return jsonify(data), 200, {'Access-Control-Allow-Origin':'*'}
 
 @app.route("/v1/status", methods=['GET'])
 def v1_status():
@@ -112,4 +130,4 @@ if __name__ == "__main__":
         print(f"SQLite error: {e}")
 
     # Run the application
-    app.run(host='0.0.0.0', debug=False, port=8080)
+    app.run(host='0.0.0.0', debug=True, port=8080)
