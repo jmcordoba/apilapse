@@ -9,14 +9,12 @@ class Database:
     """
     blablabla
     """
+
     def __init__(self, db_file):
         """Initialize the Database class with the database file path."""
         self.db_file = db_file
         self.conn = None
 
-    """
-    blablabla
-    """
     def create_connection(self):
         """Create a database connection to the SQLite database specified by db_file."""
         try:
@@ -25,18 +23,12 @@ class Database:
         except Error as e:
             print(f"Error connecting to database: {e}")
 
-    """
-    blablabla
-    """
     def close_connection(self):
         """Close the database connection."""
         if self.conn:
             self.conn.close()
             print("Database connection closed.")
 
-    """
-    blablabla
-    """
     def execute_query(self, query, params=None):
         """Execute a single query."""
         try:
@@ -52,9 +44,6 @@ class Database:
         except Error as e:
             print(f"Error executing query: {e}")
 
-    """
-    blablabla
-    """
     def fetch_all(self, query, params=None):
         """Fetch all results from a query."""
         try:

@@ -4,6 +4,7 @@ blablabla
 # https://medium.com/@rizqinur2010/deploying-python-flask-in-synology-dsm-7-without-docker-d99f1603bc87
 """
 import json
+import os
 #import logging
 #import logging.handlers
 #from flask import Flask, render_template
@@ -55,8 +56,12 @@ def db_post():
     """
     blablabla
     """
+
+    # Get the database name from the environment
+    database_name = os.getenv('database_name')
+
     # Initialize the database
-    db = Database("db/example.db")
+    db = Database("db/"+database_name)
     db.create_connection()
 
     # Insert a new row
@@ -64,9 +69,10 @@ def db_post():
     email = request.json.get('email')
     insert_query = "INSERT INTO users (name, email) VALUES (?, ?)"
     db.execute_query(insert_query, (name, email))
-    
-    #db.close_connection()
-    
+
+    # Close connection
+    db.close_connection()
+
     return jsonify({"message": "Database initialized and new row inserted"}), 200
 
 @app.route("/db", methods=['GET'])
@@ -74,18 +80,21 @@ def db_get():
     """
     blablabla
     """
+
+    # Get the database name from the environment
+    database_name = os.getenv('database_name')
+
     # Initialize the database
-    db = Database("db/example.db")
+    db = Database("db/"+database_name)
     db.create_connection()
 
-    # read all rows
+    # Read all rows
     query = "SELECT * FROM users"
-    rows = db.fetch_all(query)
+    db.fetch_all(query)
 
-    print(rows)
-
+    # Close connection
     db.close_connection()
-    
+
     return jsonify({"message": "Database successfully read"}), 200
 
 #@app.route("/template")
@@ -95,19 +104,32 @@ def db_get():
 if __name__ == "__main__":
 
     try:
-        # Initialize the database
-        db = Database("db/example.db")
-        db.create_connection()
+        # Set the configuration file path
+        json_config = 'conf/dev.json'
+
+        # Load the configuration from file
+        with open(json_config, 'r') as file:
+            config = json.load(file)
+            for key, value in config.items():
+                os.environ[key] = value
+
+        # Get the database name from the environment
+        database_name = os.getenv('database_name')
+        print(database_name)
         
+        # Initialize the database
+        db = Database("db/"+database_name)
+        db.create_connection()
+
         # Create a table if it doesn't exist
-        create_table_query = """
+        query = """
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
             email TEXT NOT NULL
         );
         """
-        db.execute_query(create_table_query)
+        db.execute_query(query)
 
         # Close connection
         db.close_connection()
