@@ -52,6 +52,10 @@ To start the flask server in local host with IP 0.0.0.0 (localhost) and port 80:
 ```bash
 flask run --host=0.0.0.0 --port=80
 ```
+To start the flask server executing the main python script:
+```bash
+python3 app.py
+```
 
 # Docker commands
 

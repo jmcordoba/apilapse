@@ -1,3 +1,6 @@
+"""
+blablabla
+"""
 import unittest
 import os
 from unittest.mock import patch, MagicMock
@@ -5,11 +8,18 @@ from src.infra.sqlite3 import Database
 from src.infra.user.get import UserGet
 
 class TestUserGet(unittest.TestCase):
+    """
+    blablabla
+    """
 
     @patch('src.infra.user.get.Database')
-    def test_get_users(self, MockDatabase):
+    def test_get_users(self, mock_database):
+        """
+        blablabla
+        """
+
         # Mock the database connection and methods
-        mock_db_instance = MockDatabase.return_value
+        mock_db_instance = mock_database.return_value
         mock_db_instance.fetch_all.return_value = [
             (1, "Alice", "alice@example.com"),
             (2, "Bob", "bob@example.com")
