@@ -1,1 +1,1 @@
-find . -type f -name "*.py" | grep -v "test/" | xargs pylint
+find . -type f -name "*.py" | grep -v ".venv" | grep -v "app/test/" | xargs pylint
