@@ -10,6 +10,7 @@ import json
 from flask import Flask, jsonify, make_response, Response, request
 #, request, send_file, redirect, url_for, has_request_context
 from src.infra.status import Status
+from src.infra.sqlite3 import Database  # Import the Database class
 
 app = Flask(__name__)
 #CORS(app)
@@ -42,7 +43,6 @@ def v1_status():
 def hellox():
     """
     blablabla
-    # https://api.twitter.com/2/openapi.json
     """
     data={
         "code" : 15, 
@@ -50,9 +50,69 @@ def hellox():
     }
     return make_response(jsonify(data),200,{'Access-Control-Allow-Origin':'*'})
 
+@app.route("/db", methods=['POST'])
+def db_post():
+    """
+    blablabla
+    """
+    # Initialize the database
+    db = Database("db/example.db")
+    db.create_connection()
+
+    # Insert a new row
+    name = request.json.get('name')
+    email = request.json.get('email')
+    insert_query = "INSERT INTO users (name, email) VALUES (?, ?)"
+    db.execute_query(insert_query, (name, email))
+    
+    #db.close_connection()
+    
+    return jsonify({"message": "Database initialized and new row inserted"}), 200
+
+@app.route("/db", methods=['GET'])
+def db_get():
+    """
+    blablabla
+    """
+    # Initialize the database
+    db = Database("db/example.db")
+    db.create_connection()
+
+    # read all rows
+    query = "SELECT * FROM users"
+    rows = db.fetch_all(query)
+
+    print(rows)
+
+    db.close_connection()
+    
+    return jsonify({"message": "Database successfully read"}), 200
+
 #@app.route("/template")
 #def template():
     #return render_template('index.html')
 
 if __name__ == "__main__":
+
+    try:
+        # Initialize the database
+        db = Database("db/example.db")
+        db.create_connection()
+        
+        # Create a table if it doesn't exist
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL
+        );
+        """
+        db.execute_query(create_table_query)
+
+        # Close connection
+        db.close_connection()
+    except Exception as e:
+        print(f"Error initializing database: {e}")
+
+    # Run the application
     app.run(host='0.0.0.0', debug=False, port=8080)
