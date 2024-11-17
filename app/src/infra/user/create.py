@@ -13,20 +13,26 @@ class UserCreate:
     """
     def insert_user(self):
         """
-        blablabla
+        Insert a new user into the database.
         """
+        db = None
+        try:
+            # Get the database name from the environment and initialize the database
+            db = Database(os.getenv('database_name'))
+            db.create_connection()
 
-        # Get the database name from the environment and Initialize the database
-        db = Database(os.getenv('database_name'))
-        db.create_connection()
+            # Insert a new row
+            name = request.json.get('name')
+            email = request.json.get('email')
+            insert_query = "INSERT INTO users (name, email) VALUES (?, ?)"
+            db.execute_query(insert_query, (name, email))
 
-        # Insert a new row
-        name = request.json.get('name')
-        email = request.json.get('email')
-        insert_query = "INSERT INTO users (name, email) VALUES (?, ?)"
-        db.execute_query(insert_query, (name, email))
+            return "Database initialized and new row inserted"
 
-        # Close connection
-        db.close_connection()
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return "An error occurred while inserting the user"
 
-        return "Database initialized and new row inserted"
+        finally:
+            if db:
+                db.close_connection()

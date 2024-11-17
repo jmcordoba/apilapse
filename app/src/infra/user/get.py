@@ -2,28 +2,36 @@
 blablabla
 """
 import os
+import sqlite3
 from dataclasses import dataclass
-from src.infra.sqlite3 import Database  # Import the Database class
+from src.infra.sqlite3 import Database
 
 @dataclass
 class UserGet:
     """
-    blablabla
+    Retrieve all users from the database.
     """
-
     def get_users(self):
         """
-        blablabla
+        Retrieve all users from the database.
         """
+        try:
+            # Get the database name from the environment and initialize the database
+            db = Database(os.getenv('database_name'))
+            db.create_connection()
 
-        # Get the database name from the environment and Initialize the database
-        db = Database(os.getenv('database_name'))
-        db.create_connection()
+            # Read all rows
+            rows = db.fetch_all("SELECT * FROM users")
 
-        # Read all rows
-        db.fetch_all("SELECT * FROM users")
+            # Return the content of the rows
+            return rows
 
-        # Close connection
-        db.close_connection()
-
-        return "Database successfully read"
+        except sqlite3.Error as e:
+            print(f"SQLite error occurred: {e}")
+            return None
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            return None
+        finally:
+            if db:
+                db.close_connection()
