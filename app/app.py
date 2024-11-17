@@ -68,9 +68,9 @@ def db_get():
     """
 
     user_get = UserGet()
-    message = user_get.get_users()
+    rows = user_get.get_users()
 
-    return jsonify({"message": message}), 200
+    return jsonify({"rows": rows}), 200
 
 #@app.route("/template")
 #def template():

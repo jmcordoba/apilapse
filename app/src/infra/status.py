@@ -7,7 +7,8 @@ from flask import request, has_request_context
 @dataclass
 class Status:
     """
-    blablabla
+    The Status class is responsible for retrieving and providing status information
+    from the server and the application.
     """
     def get_status(self, req=request):
         """
