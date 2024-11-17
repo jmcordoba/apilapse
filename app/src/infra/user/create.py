@@ -2,7 +2,6 @@
 blablabla
 """
 import os
-import sqlite3
 from dataclasses import dataclass
 from flask import request
 from src.infra.sqlite3 import Database  # Import the Database class
@@ -30,7 +29,7 @@ class UserCreate:
 
             return "Database initialized and new row inserted"
 
-        except sqlite3.Error as e:
+        except Exception as e:
             print(f"An error occurred: {e}")
             return "An error occurred while inserting the user"
 

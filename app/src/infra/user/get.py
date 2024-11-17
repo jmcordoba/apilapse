@@ -4,7 +4,7 @@ blablabla
 import os
 import sqlite3
 from dataclasses import dataclass
-from src.infra.sqlite3 import Database  # Import the Database class
+from src.infra.sqlite3 import Database
 
 @dataclass
 class UserGet:
@@ -29,7 +29,9 @@ class UserGet:
         except sqlite3.Error as e:
             print(f"SQLite error occurred: {e}")
             return None
-
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            return None
         finally:
             if db:
                 db.close_connection()
