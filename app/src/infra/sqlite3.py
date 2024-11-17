@@ -68,30 +68,3 @@ class Database:
         except Error as e:
             print(f"Error fetching data: {e}")
             return None
-
-# Example usage:
-if __name__ == "__main__":
-    db = Database("example.db")
-    db.create_connection()
-    
-    # Create a table
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL,
-        age INTEGER
-    );
-    """
-    db.execute_query(create_table_query)
-    
-    # Insert data
-    insert_query = "INSERT INTO users (name, age) VALUES (?, ?)"
-    db.execute_query(insert_query, ("Alice", 30))
-    
-    # Fetch data
-    select_query = "SELECT * FROM users"
-    rows = db.fetch_all(select_query)
-    for row in rows:
-        print(row)
-    
-    db.close_connection()
