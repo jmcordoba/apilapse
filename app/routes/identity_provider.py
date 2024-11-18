@@ -4,9 +4,13 @@ from src.infra.user.validate import UserValidate
 from src.infra.user.login import UserLogin
 from src.infra.user.get import UserGet
 from src.infra.user.delete import UserDelete
+from src.infra.user.user_info import UserInfo
+from src.infra.user.user_delete import UserRemove
 
 ip = Blueprint('ip', __name__)
 
+# change password: provide old password, new password, confirm new password
+# forgot password: send a link with hash to allow set a new password for a validated account
 
 @ip.route("/signin", methods=['POST'])
 def ip_v1_signin():
@@ -27,7 +31,7 @@ def ip_v1_signin():
     return jsonify(data), status_code, {'Access-Control-Allow-Origin':'*'}
 
 @ip.route("/login", methods=['POST'])
-def login_user():
+def ip_v1_login_user():
     """
     Login a user and return an access token.
     """
@@ -43,13 +47,45 @@ def login_user():
 
 
 @ip.route("/validate", methods=['GET'])
-def validate_user():
+def ip_v1_validate_user():
     """
     Validate a user token.
     """
     user_validate = UserValidate()
     result = user_validate.validate_token()
     return jsonify(result), 200, {'Access-Control-Allow-Origin': '*'}
+
+@ip.route("/me", methods=['GET'])
+def ip_v1_me():
+    """
+    Retrieve user information using the Access Token from the cookie.
+    """
+    user_info = UserInfo()
+    response = user_info.user_info()
+    
+    # Ensure response is a tuple and set default status code if not provided
+    if isinstance(response, tuple):
+        data, status_code = response
+        print(status_code)
+        print(jsonify(data))
+        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
+    else:
+        return response
+
+@ip.route("/me", methods=['DELETE'])
+def ip_v1_remove_user():
+    """
+    Remove a user using the Access Token or Refresh Token from the cookie.
+    """
+    user_remove = UserRemove()
+    response = user_remove.remove_user()
+    
+    # Ensure response is a tuple and set default status code if not provided
+    if isinstance(response, tuple):
+        data, status_code = response
+        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
+    else:
+        return response
 
 @ip.route("/user/<int:id>", methods=['GET'])
 def ip_v1_user_by_id(id):

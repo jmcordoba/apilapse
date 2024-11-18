@@ -51,15 +51,24 @@ class UserLogin:
                 secret_key = os.getenv('SECRET_KEY', 'your_secret_key')
                 access_token = jwt.encode(payload, secret_key, algorithm='HS256')
 
+                # Generate a refresh token
+                refresh_payload = {
+                    'user_uuid': user_uuid,
+                    'exp': datetime.utcnow() + timedelta(days=15)
+                }
+                refresh_token = jwt.encode(refresh_payload, secret_key, algorithm='HS256')
+
                 # Create response
                 response = {
                     "message": "Login successful",
-                    "access_token": access_token
+                    "access_token": access_token,
+                    "refresh_token": refresh_token
                 }
 
-                # Set the access token as an HTTP-only cookie
+                # Set the access token and refresh token as HTTP-only cookies
                 resp = make_response(jsonify(response), 200)
                 resp.set_cookie('Access-Token', access_token, httponly=True, secure=True, samesite='Lax')
+                resp.set_cookie('Refresh-Token', refresh_token, httponly=True, secure=True, samesite='Lax')
 
                 return resp
             else:
