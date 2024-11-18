@@ -57,3 +57,17 @@ class Database:
         except Error as e:
             print(f"Error fetching data: {e}")
             return None
+
+    def fetch_one(self, query, params=None):
+        """Fetch a single result from a query."""
+        try:
+            cursor = self.conn.cursor()
+            if params:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
+            row = cursor.fetchone()
+            return row
+        except Error as e:
+            print(f"Error fetching data: {e}")
+            return None
