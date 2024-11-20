@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, current_app
 
 hello = Blueprint('hello', __name__)
 
-@hello.route("/", methods=['GET'])
+@hello.route("/hello", methods=['GET'])
 def v1_hello():
     """
     blablabla

@@ -1,16 +1,16 @@
 import os
+import hashlib
 import jwt
-from datetime import datetime, timedelta
 from dataclasses import dataclass
 from flask import request, jsonify, make_response
 from src.infra.sqlite3 import Database
 
 @dataclass
-class UserInfo:
+class UserChangePassword:
     """
-    Class responsible for returning the information of a user.
+    Class responsible for changing the user's password.
     """
-    def user_info(self):
+    def change_password(self):
         """
         Retrieve user information using the Access Token from the cookie.
         """
@@ -45,38 +45,50 @@ class UserInfo:
             except jwt.InvalidTokenError:
                 return {"message": "Invalid Access Token"}, 401
 
-            # Check if the access token has been revoked
+            # Get data from json fields
+            current_password = request.json.get('current_password')
+            new_password = request.json.get('new_password')
+            new_password2 = request.json.get('new_password2')
+
+            if not current_password or not new_password or not new_password2:
+                return {"message": "Current password, new password, and confirmation are required"}, 400
+
+            if new_password != new_password2:
+                return {"message": "New passwords do not match"}, 400
+
+            # Hash the current password
+            hashed_current_password = hashlib.sha256(current_password.encode()).hexdigest()
+
+            # Initialize the database
             db = Database(os.getenv('database_name'))
             db.create_connection()
-            # Retrieve user information using the UUID
-            QUERY = """
-            SELECT id, uuid, name, email, created_at, updated_at FROM users WHERE uuid = ?
+
+            # Verify the current password
+            verify_query = """
+            SELECT id FROM users WHERE uuid = ? AND password = ?
             """
             cursor = db.conn.cursor()
-            cursor.execute(QUERY, (user_uuid,))
+            cursor.execute(verify_query, (user_uuid, hashed_current_password))
             user = cursor.fetchone()
 
-            if user:
-                user_info = {
-                    "id": user[0],
-                    "uuid": user[1],
-                    "name": user[2],
-                    "email": user[3],
-                    "created_at": user[4],
-                    "updated_at": user[5]
-                }
-                # Create response
-                resp = make_response(jsonify(user_info), 200)
-                resp.set_cookie('Access-Token', access_token, httponly=True, secure=True, samesite='Lax')
-                resp.set_cookie('Refresh-Token', refresh_token, httponly=True, secure=True, samesite='Lax')
+            if not user:
+                return {"message": "Current password is incorrect"}, 401
 
-                return resp
-            else:
-                return {"message": "User not found"}, 404
+            # Hash the new password
+            hashed_new_password = hashlib.sha256(new_password.encode()).hexdigest()
+
+            # Update the password
+            update_query = """
+            UPDATE users SET password = ? WHERE uuid = ?
+            """
+            cursor.execute(update_query, (hashed_new_password, user_uuid))
+            db.conn.commit()
+
+            return {"message": "Password changed successfully"}, 200
 
         except Exception as e:
             print(f"An error occurred: {e}")
-            return {"message": "An error occurred while retrieving user information"}, 500
+            return {"message": "An error occurred while changing the password"}, 500
 
         finally:
             if db:

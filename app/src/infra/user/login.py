@@ -67,8 +67,8 @@ class UserLogin:
 
                 # Set the access token and refresh token as HTTP-only cookies
                 resp = make_response(jsonify(response), 200)
-                resp.set_cookie('Access-Token', access_token, httponly=True, secure=True, samesite='Lax')
-                resp.set_cookie('Refresh-Token', refresh_token, httponly=True, secure=True, samesite='Lax')
+                resp.set_cookie('Access-Token', access_token, httponly=True, secure=False, samesite='Lax', max_age=3600)
+                resp.set_cookie('Refresh-Token', refresh_token, httponly=True, secure=False, samesite='Lax', max_age=3600*24*15)
 
                 return resp
             else:
