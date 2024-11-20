@@ -11,7 +11,9 @@ from routes.web import web
 from routes.identity_provider import ip
 from src.infra.db.init import Db
 
-app = Flask(__name__)
+app = Flask(__name__,
+            template_folder='web/templates',
+            static_folder='web/static')
 app.register_blueprint(hello, url_prefix='')
 app.register_blueprint(web, url_prefix='')
 app.register_blueprint(health, url_prefix='/health')
