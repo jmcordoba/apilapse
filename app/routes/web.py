@@ -14,32 +14,32 @@ def signin():
     """
     Return a template
     """
-    return render_template('signin.html')
+    return render_template('user/signin.html')
 
 @web.route("/forgot_password", methods=['GET'])
 def forgot_password():
     """
     Return a template
     """
-    return render_template('forgot_password.html')
+    return render_template('user/forgot_password.html')
 
 @web.route("/validate", methods=['GET'])
 def validate():
     """
     Return a template
     """
-    return render_template('validate.html')
+    return render_template('user/validate.html')
 
 @web.route("/home", methods=['GET'])
 def home():
     """
     Return a template
     """
-    return render_template('home.html')
+    return render_template('user/home.html')
 
 @web.route("/reset_password", methods=['GET'])
 def reset_password():
     """
     Return a template
     """
-    return render_template('reset_password.html')
+    return render_template('user/reset_password.html')
