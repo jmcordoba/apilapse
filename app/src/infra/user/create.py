@@ -66,6 +66,7 @@ class UserCreate:
             user_id = cursor.lastrowid
 
             data={
+                "message": "User created successfully",
                 "user_uuid": user_uuid,
                 "email" : email,
                 "token" : token

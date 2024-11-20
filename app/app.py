@@ -7,13 +7,13 @@ import logging
 from flask import Flask
 from routes.health import health
 from routes.hello import hello
-from routes.template import template
+from routes.web import web
 from routes.identity_provider import ip
 from src.infra.db.init import Db
 
 app = Flask(__name__)
 app.register_blueprint(hello, url_prefix='')
-app.register_blueprint(template, url_prefix='')
+app.register_blueprint(web, url_prefix='')
 app.register_blueprint(health, url_prefix='/health')
 app.register_blueprint(ip, url_prefix='/ip/v1')
 

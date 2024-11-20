@@ -6,11 +6,12 @@ from src.infra.user.get import UserGet
 from src.infra.user.delete import UserDelete
 from src.infra.user.user_info import UserInfo
 from src.infra.user.user_delete import UserRemove
+from src.infra.user.change_password import UserChangePassword
+from src.infra.user.request_reset_password import UserRequestPasswordReset
+from src.infra.user.reset_password import UserResetPassword
+from src.infra.user.logout import UserLogout
 
 ip = Blueprint('ip', __name__)
-
-# change password: provide old password, new password, confirm new password
-# forgot password: send a link with hash to allow set a new password for a validated account
 
 @ip.route("/signin", methods=['POST'])
 def ip_v1_signin():
@@ -126,3 +127,63 @@ def delete_all_users():
     user_delete = UserDelete()
     message = user_delete.delete_all_users()
     return jsonify({"message": message}), 200, {'Access-Control-Allow-Origin': '*'}
+
+@ip.route("/change_password", methods=['POST'])
+def change_password():
+    """
+    Change the user's password using the Access Token from the cookie.
+    """
+    user_change_password = UserChangePassword()
+    response = user_change_password.change_password()
+    
+    # Ensure response is a tuple and set default status code if not provided
+    if isinstance(response, tuple):
+        data, status_code = response
+        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
+    else:
+        return response
+
+@ip.route("/reset_password", methods=['GET'])
+def request_password_reset():
+    """
+    Request a password reset token.
+    """
+    user_request_password_reset = UserRequestPasswordReset()
+    response = user_request_password_reset.request_reset()
+    
+    # Ensure response is a tuple and set default status code if not provided
+    if isinstance(response, tuple):
+        data, status_code = response
+        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
+    else:
+        return response
+
+@ip.route("/reset_password", methods=['POST'])
+def reset_password():
+    """
+    Reset the user's password using the token.
+    """
+    user_reset_password = UserResetPassword()
+    response = user_reset_password.reset_password()
+    
+    # Ensure response is a tuple and set default status code if not provided
+    if isinstance(response, tuple):
+        data, status_code = response
+        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
+    else:
+        return response
+
+@ip.route("/logout", methods=['POST'])
+def logout_user():
+    """
+    Logout a user and remove all cookies.
+    """
+    user_logout = UserLogout()
+    response = user_logout.logout()
+    
+    # Ensure response is a tuple and set default status code if not provided
+    if isinstance(response, tuple):
+        data, status_code = response
+        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
+    else:
+        return response

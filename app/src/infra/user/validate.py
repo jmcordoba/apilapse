@@ -25,7 +25,7 @@ class UserValidate:
             token = request.args.get('token')
 
             if not uuid or not token:
-                return {"message": "Email and token are required"}
+                return {"message": "Email and token are required"}, 400
 
             # Hash the token
             hashed_token = hashlib.sha256(token.encode()).hexdigest()
@@ -49,13 +49,13 @@ class UserValidate:
                 cursor.execute(update_query, (updated_at, user_id))
                 db.conn.commit()
 
-                return {"message": "User validated successfully", "user_uuid": user_uuid}
+                return {"message": "User validated successfully", "user_uuid": user_uuid}, 200
             else:
-                return {"message": "Invalid token or uuid"}
+                return {"message": "Invalid token or uuid"}, 400
 
         except Exception as e:
             print(f"An error occurred: {e}")
-            return {"message": "An error occurred while validating the user"}
+            return {"message": "An error occurred while validating the user"}, 400
 
         finally:
             if db:
