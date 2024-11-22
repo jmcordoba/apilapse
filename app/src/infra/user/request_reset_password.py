@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from dataclasses import dataclass
 from flask import request, jsonify
 from src.infra.sqlite3 import Database
+from src.app.shared.email import EmailValidator
+from src.infra.email.gmail import Sender
 
 @dataclass
 class UserRequestPasswordReset:
@@ -23,13 +25,17 @@ class UserRequestPasswordReset:
             if not email:
                 return {"message": "Email is required"}, 400
 
+            # Validate the password
+            if not EmailValidator.is_valid_email(email):
+                return {"message": "The email address provided is not valid. Please enter a valid email address."}, 400
+
             # Initialize the database
             db = Database(os.getenv('database_name'))
             db.create_connection()
 
             # Check if the user exists
             user_query = """
-            SELECT id, uuid FROM users WHERE email = ?
+            SELECT id, uuid, name FROM users WHERE email = ?
             """
             cursor = db.conn.cursor()
             cursor.execute(user_query, (email,))
@@ -38,7 +44,7 @@ class UserRequestPasswordReset:
             if not user:
                 return {"message": "User not found"}, 404
 
-            user_id, user_uuid = user
+            user_id, user_uuid, name = user
 
             # Remove previous tokens for the user
             delete_query = """
@@ -53,17 +59,21 @@ class UserRequestPasswordReset:
             expires_at = (datetime.utcnow() + timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
 
             # Store the hashed token in the database
-            token_query = """
+            QUERY = """
             INSERT INTO password_resets (user_id, token, expires_at)
             VALUES (?, ?, ?)
             """
-            cursor.execute(token_query, (user_id, hashed_token, expires_at))
+            cursor.execute(QUERY, (user_id, hashed_token, expires_at))
             db.conn.commit()
 
-            # Send the token to the user's email (this part is not implemented here)
-            # send_email(email, token)
+            # Send the token to the user's email
+            sender = Sender()
+            subject = 'apilapse | set a new password'
+            body = 'Hello '+name+',\n\n'+'Click to the following link to set a new password for your account:\n\n'+'http://localhost:8080/reset_password?token='+token+'&email='+email+'\n\n'+'If you did not request a password reset, please ignore this email.\n\n'+'Thank you,\napilapse Team'
+            sender.send_email(email, subject, body)
 
-            return {"token": token}, 200
+            #return {"token": token}, 200
+            return {"message": "Password reset successfully, please check your email to define a new password for your account."}, 200
 
         except Exception as e:
             print(f"An error occurred: {e}")

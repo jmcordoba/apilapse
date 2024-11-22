@@ -16,6 +16,9 @@ async function validateToken() {
         return;
     }
 
+    document.getElementById('validateTokenMessage').style.color = 'green';
+    document.getElementById('validateTokenMessage').textContent = 'Validating your account...';
+
     const response = await fetch(`/ip/v1/validate?uuid=${encodeURIComponent(uuid)}&token=${encodeURIComponent(token)}`, {
         method: 'GET',
         headers: {
@@ -23,13 +26,24 @@ async function validateToken() {
         }
     });
 
-    const result = await response.json();
-    document.getElementById('validateTokenMessage').textContent = result.message;
-
     if (response.status === 200) {
-        window.location.href = '/';
+        
+        // Add a delay of 3 seconds before redirecting
+        setTimeout(() => {
+            window.location.href = '/login?message=Your account has been activated successfully. Please login to continue.';
+        }, 3000);
+
     } else {
-        window.location.href = '/signin';
+
+        const result = await response.json();
+        
+        document.getElementById('validateTokenMessage').textContent = result.message;
+        document.getElementById('validateTokenMessage').style.color = 'red';
+        
+        // Add a delay of 3 seconds before redirecting
+        setTimeout(() => {
+            window.location.href = '/signin';
+        }, 3000);
     }
 }
 

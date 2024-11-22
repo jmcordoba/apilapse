@@ -6,6 +6,9 @@ from dataclasses import dataclass
 from flask import request, jsonify, make_response
 import jwt
 from src.infra.sqlite3 import Database
+from src.app.shared.email import EmailValidator
+from src.app.shared.password import PasswordValidator
+from src.infra.email.gmail import Sender
 
 @dataclass
 class UserLogin:
@@ -28,6 +31,14 @@ class UserLogin:
 
             if not email or not password:
                 return {"message": "Email and password are required"}, 400
+
+            # Validate the password
+            if not EmailValidator.is_valid_email(email):
+                return {"message": "The email address provided is not valid. Please enter a valid email address."}, 400
+
+            # Validate the password
+            if not PasswordValidator.is_valid_password(password):
+                return {"message": "Password must include an uppercase letter, a lowercase letter, a number, and a symbol"}, 400
 
             # Hash the password
             hashed_password = hashlib.sha256(password.encode()).hexdigest()
@@ -64,6 +75,13 @@ class UserLogin:
                     "access_token": access_token,
                     "refresh_token": refresh_token
                 }
+
+                # Send an email notification
+                sender = Sender()
+                to_email = 'jmcordoba@gmail.com'
+                subject = 'apilapse | login'
+                body = 'Hello '+name+',\n\n'+'You have already logged in.'+'\n\n'+'Thank you,\napilapse Team'
+                sender.send_email(to_email, subject, body)
 
                 # Set the access token and refresh token as HTTP-only cookies
                 resp = make_response(jsonify(response), 200)

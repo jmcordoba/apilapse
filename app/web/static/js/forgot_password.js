@@ -11,4 +11,8 @@ document.getElementById('forgotPasswordForm').addEventListener('submit', async f
 
     const result = await response.json();
     document.getElementById('forgotPasswordMessage').textContent = result.message;
+    
+    if (response.status === 200) {
+        document.getElementById('forgotPasswordMessage').style.color = 'green';
+    }
 });

@@ -21,9 +21,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     const result = await response.json();
     document.getElementById('registerMessage').textContent = result.message;
     
-    if (response.status === 200) {
-        uuid = result.user_uuid
-        token = result.token
-        window.location.href = `/validate?uuid=${encodeURIComponent(uuid)}&token=${encodeURIComponent(token)}`;
+    if (response.status === 201) {
+        document.getElementById('registerMessage').style.color = 'green';
     }
 });
