@@ -41,7 +41,13 @@ button:hover {
 }
 .message {
     margin-top: 10px;
+    margin-bottom: 10px;
     color: red;
+}
+.wmessage {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: green;
 }
 .links a {
     font-size: 14px;

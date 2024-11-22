@@ -9,6 +9,9 @@ from datetime import datetime
 from dataclasses import dataclass
 from flask import request
 from src.infra.sqlite3 import Database
+from src.app.shared.email import EmailValidator
+from src.app.shared.password import PasswordValidator
+from src.infra.email.gmail import Sender
 
 @dataclass
 class UserCreate:
@@ -31,12 +34,17 @@ class UserCreate:
             password = request.json.get('password')
             password2 = request.json.get('password2')
 
+            # Validate the password
+            if not EmailValidator.is_valid_email(email):
+                return {"message": "The email address provided is not valid. Please enter a valid email address."}, 400
+
             # Check if passwords match
             if password != password2:
-                data = {
-                    "message": "Passwords do not match"
-                }
-                return data, 400
+                return {"message": "Passwords do not match"}, 400
+
+            # Validate the password
+            if not PasswordValidator.is_valid_password(password):
+                return {"message": "Password must include an uppercase letter, a lowercase letter, a number, and a symbol"}, 400
 
             # Hash the password
             hashed_password = hashlib.sha256(password.encode()).hexdigest()
@@ -65,14 +73,20 @@ class UserCreate:
             # Get the inserted ID
             user_id = cursor.lastrowid
 
+            # Send email to the customer to validate the account
+            sender = Sender()
+            subject = 'apilapse | validate account'
+            body = 'Hello '+name+','+'\n\n'+'Please click on the link below to validate your account:'+'\n\n'+'http://localhost:8080/validate?token='+token+'&uuid='+user_uuid+'\n\n'+'Thank you,\napilapse Team'
+            sender.send_email(email, subject, body)
+
             data={
-                "message": "User created successfully",
+                "message": "User created successfully, please check your email to validate your account.",
                 "user_uuid": user_uuid,
                 "email" : email,
                 "token" : token
             }
 
-            return data, 200
+            return data, 201
 
         except Exception as e:
             print(f"An error occurred: {e}")

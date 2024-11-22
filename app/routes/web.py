@@ -9,12 +9,19 @@ def main():
     """
     return render_template('user/index.html')
 
-@web.route("/signin", methods=['GET'])
-def signin():
+@web.route("/login", methods=['GET'])
+def login():
     """
     Return a template
     """
-    return render_template('user/signin.html')
+    return render_template('user/login.html')
+
+@web.route("/signup", methods=['GET'])
+def signup():
+    """
+    Return a template
+    """
+    return render_template('user/signup.html')
 
 @web.route("/forgot_password", methods=['GET'])
 def forgot_password():

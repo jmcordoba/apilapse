@@ -4,6 +4,7 @@ from datetime import datetime
 from dataclasses import dataclass
 from flask import request
 from src.infra.sqlite3 import Database
+from src.infra.email.gmail import Sender
 
 @dataclass
 class UserValidate:
@@ -32,26 +33,35 @@ class UserValidate:
 
             # Check if the user exists and the token matches
             QUERY = """
-            SELECT id, uuid FROM users WHERE uuid = ? AND token = ? AND enabled=0
+            SELECT id, uuid, name, email FROM users WHERE uuid = ? AND token = ? AND enabled=0
             """
             cursor = db.conn.cursor()
             cursor.execute(QUERY, (uuid, hashed_token))
             user = cursor.fetchone()
 
-            if user:
-                # Update the user to set validated
-                user_id = user[0]
-                user_uuid = user[1]
-                updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                update_query = """
-                UPDATE users SET enabled = 1, updated_at = ? WHERE id = ?
-                """
-                cursor.execute(update_query, (updated_at, user_id))
-                db.conn.commit()
-
-                return {"message": "User validated successfully", "user_uuid": user_uuid}, 200
-            else:
+            if not user:
                 return {"message": "Invalid token or uuid"}, 400
+            
+            # Update the user to set validated
+            user_id = user[0]
+            user_uuid = user[1]
+            name = user[2]
+            email = user[3]
+            updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            update_query = """
+            UPDATE users SET enabled = 1, updated_at = ? WHERE id = ?
+            """
+            cursor.execute(update_query, (updated_at, user_id))
+            db.conn.commit()
+
+            # Send email to the customer to welcome
+            sender = Sender()
+            subject = 'apilapse | welcome'
+            body = 'Hello '+name+','+'\n\n'+'Welcome to apilapse!'+'\n\n'+'Thank you,\napilapse Team'
+            sender.send_email(email, subject, body)
+
+            return {"message": "User validated successfully", "user_uuid": user_uuid}, 200
+                
 
         except Exception as e:
             print(f"An error occurred: {e}")

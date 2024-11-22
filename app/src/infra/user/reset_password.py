@@ -4,6 +4,8 @@ from datetime import datetime
 from dataclasses import dataclass
 from flask import request, jsonify
 from src.infra.sqlite3 import Database
+from src.app.shared.password import PasswordValidator
+from src.infra.email.gmail import Sender
 
 @dataclass
 class UserResetPassword:
@@ -18,16 +20,19 @@ class UserResetPassword:
         try:
             # Get the token and new password from the json fields
             token = request.json.get('token')
+            email = request.json.get('email')
             new_password = request.json.get('new_password')
             new_password2 = request.json.get('new_password2')
 
-            print(token)
-
-            if not token or not new_password or not new_password2:
-                return {"message": "Token, new password, and confirmation are required"}, 400
+            if not email or not token or not new_password or not new_password2:
+                return {"message": "Token, email, new password, and confirmation are required"}, 400
 
             if new_password != new_password2:
                 return {"message": "New passwords do not match"}, 400
+
+            # Validate the password
+            if not PasswordValidator.is_valid_password(new_password):
+                return {"message": "Password must include an uppercase letter, a lowercase letter, a number, and a symbol"}, 400
 
             # Hash the token
             hashed_token = hashlib.sha256(token.encode()).hexdigest()
@@ -37,11 +42,11 @@ class UserResetPassword:
             db.create_connection()
 
             # Verify the token
-            token_query = """
+            QUERY = """
             SELECT user_id FROM password_resets WHERE token = ? AND expires_at > ?
             """
             cursor = db.conn.cursor()
-            cursor.execute(token_query, (hashed_token, datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")))
+            cursor.execute(QUERY, (hashed_token, datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")))
             reset = cursor.fetchone()
 
             if not reset:
@@ -66,7 +71,13 @@ class UserResetPassword:
             cursor.execute(delete_query, (hashed_token,))
             db.conn.commit()
 
-            return {"message": "Password reset successfully"}, 200
+            # Send the token to the user's email
+            sender = Sender()
+            subject = 'apilapse | new password set'
+            body = 'Hello,'+'\n\n'+'A new password has been set to your account.'+'\n\n'+'Thank you,\napilapse Team'
+            sender.send_email(email, subject, body)
+
+            return {"message": "Password reset successfully."}, 200
 
         except Exception as e:
             print(f"An error occurred: {e}")
