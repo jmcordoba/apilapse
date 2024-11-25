@@ -4,6 +4,7 @@ import jwt
 from dataclasses import dataclass
 from flask import request, jsonify, make_response
 from src.infra.sqlite3 import Database
+from src.infra.shared.conf import Config
 
 @dataclass
 class UserChangePassword:
@@ -22,10 +23,14 @@ class UserChangePassword:
 
             if not access_token and not refresh_token:
                 return {"message": "Access Token is required"}, 401
-            print(access_token)
-            # Validate the Access Token
-            secret_key = os.getenv('SECRET_KEY', 'your_secret_key')
-            print(secret_key)
+            
+            # Load the configuration from the Config class
+            conf = Config()
+            config = conf.get_config()
+
+            # Get secret key from the configuration
+            secret_key = config['secret_key']
+            
             try:
                 payload = jwt.decode(access_token, secret_key, algorithms=['HS256'])
                 user_uuid = payload['user_uuid']
@@ -59,8 +64,8 @@ class UserChangePassword:
             # Hash the current password
             hashed_current_password = hashlib.sha256(current_password.encode()).hexdigest()
 
-            # Initialize the database
-            db = Database(os.getenv('database_name'))
+            # Get the database name from the environment and Initialize the database
+            db = Database(config['database_name'])
             db.create_connection()
 
             # Verify the current password

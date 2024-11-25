@@ -7,6 +7,7 @@ from flask import request, jsonify
 from src.infra.sqlite3 import Database
 from src.app.shared.email import EmailValidator
 from src.infra.email.gmail import Sender
+from src.infra.shared.conf import Config
 
 @dataclass
 class UserRequestPasswordReset:
@@ -29,8 +30,12 @@ class UserRequestPasswordReset:
             if not EmailValidator.is_valid_email(email):
                 return {"message": "The email address provided is not valid. Please enter a valid email address."}, 400
 
-            # Initialize the database
-            db = Database(os.getenv('database_name'))
+            # Load the configuration from the Config class
+            conf = Config()
+            config = conf.get_config()
+
+            # Get the database name from the environment and Initialize the database
+            db = Database(config['database_name'])
             db.create_connection()
 
             # Check if the user exists

@@ -6,6 +6,7 @@ from flask import request, jsonify
 from src.infra.sqlite3 import Database
 from src.app.shared.password import PasswordValidator
 from src.infra.email.gmail import Sender
+from src.infra.shared.conf import Config
 
 @dataclass
 class UserResetPassword:
@@ -37,8 +38,12 @@ class UserResetPassword:
             # Hash the token
             hashed_token = hashlib.sha256(token.encode()).hexdigest()
 
-            # Initialize the database
-            db = Database(os.getenv('database_name'))
+            # Load the configuration from the Config class
+            conf = Config()
+            config = conf.get_config()
+
+            # Get the database name from the environment and Initialize the database
+            db = Database(config['database_name'])
             db.create_connection()
 
             # Verify the token

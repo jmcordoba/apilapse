@@ -2,6 +2,7 @@ import os
 import sqlite3
 from dataclasses import dataclass
 from src.infra.sqlite3 import Database
+from src.infra.shared.conf import Config
 
 @dataclass
 class UserDelete:
@@ -14,8 +15,12 @@ class UserDelete:
         """
         db = None
         try:
-            # Get the database name from the environment and initialize the database
-            db = Database(os.getenv('database_name'))
+            # Load the configuration from the Config class
+            conf = Config()
+            config = conf.get_config()
+
+            # Get the database name from the environment and Initialize the database
+            db = Database(config['database_name'])
             db.create_connection()
 
             # Delete the user by ID

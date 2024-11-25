@@ -10,6 +10,7 @@ from routes.hello import hello
 from routes.web import web
 from routes.identity_provider import ip
 from src.infra.db.init import Db
+from src.infra.shared.conf import Config
 
 app = Flask(__name__,
             template_folder='web/templates',
@@ -35,9 +36,13 @@ logging.basicConfig(level=logging.INFO,
 
 if __name__ == "__main__":
 
+    # Load the configuration from the Config class
+    conf = Config()
+    config = conf.get_config()
+
     # Initialize the database
     database = Db()
     message = database.init()
 
     # Run the application
-    app.run(host='0.0.0.0', debug=True, port=8080)
+    app.run(host=config['host'], debug=config['debug'], port=config['port'])
