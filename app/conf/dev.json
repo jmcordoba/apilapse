@@ -1,3 +1,9 @@
 {
-    "database_name": "db/users.db"
+    "host": "localhost",
+    "port": 8080,
+    "debug": false,
+    "database_name": "db/users.db",
+    "email": "apilapse@gmail.com",
+    "email_password": "dqxmsbvmszutksmi",
+    "secret_key": "your_secret_key"
 }

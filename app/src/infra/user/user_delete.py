@@ -3,6 +3,7 @@ import jwt
 from dataclasses import dataclass
 from flask import request, jsonify
 from src.infra.sqlite3 import Database
+from src.infra.shared.conf import Config
 
 @dataclass
 class UserRemove:
@@ -22,8 +23,13 @@ class UserRemove:
             if not access_token and not refresh_token:
                 return {"message": "Access Token or Refresh Token is required"}, 401
 
-            # Validate the token
-            secret_key = os.getenv('SECRET_KEY', 'your_secret_key')
+            # Load the configuration from the Config class
+            conf = Config()
+            config = conf.get_config()
+
+            # Get secret key from the configuration
+            secret_key = config['secret_key']
+            
             try:
                 if access_token:
                     payload = jwt.decode(access_token, secret_key, algorithms=['HS256'])
@@ -35,8 +41,8 @@ class UserRemove:
             except jwt.InvalidTokenError:
                 return {"message": "Invalid Token"}, 401
 
-            # Initialize the database
-            db = Database(os.getenv('database_name'))
+            # Get the database name from the environment and Initialize the database
+            db = Database(config['database_name'])
             db.create_connection()
 
             # Remove the user using the UUID

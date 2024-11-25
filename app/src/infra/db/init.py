@@ -1,11 +1,11 @@
 """
 blablabla
 """
-import os
 import json
 import sqlite3
 from dataclasses import dataclass
 from src.infra.sqlite3 import Database
+from src.infra.shared.conf import Config
 
 @dataclass
 class Db:
@@ -17,17 +17,12 @@ class Db:
         Create the database and the needed tables if they don't exist.
         """
         try:
-            # Set the configuration file path
-            JSON_CONFIG = 'conf/dev.json'
-
-            # Load the configuration from file
-            with open(JSON_CONFIG, 'r', encoding='utf-8') as file:
-                config = json.load(file)
-                for key, value in config.items():
-                    os.environ[key] = value
+            # Load the configuration from the Config class
+            conf = Config()
+            config = conf.get_config()
 
             # Get the database name from the environment and Initialize the database
-            db = Database(os.getenv('database_name'))
+            db = Database(config['database_name'])
             db.create_connection()
 
             # Create a table if it doesn't exist

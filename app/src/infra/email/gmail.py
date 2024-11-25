@@ -1,6 +1,7 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from src.infra.shared.conf import Config
 
 class Sender:
     """
@@ -13,8 +14,13 @@ class Sender:
         :param gmail_user: The Gmail account email address.
         :param gmail_password: The Gmail account password.
         """
-        self.gmail_user = 'apilapse@gmail.com'
-        self.gmail_password = 'dqxmsbvmszutksmi' # Use an app password
+        # Load the configuration from the Config class
+        conf = Config()
+        config = conf.get_config()
+
+        # Get the email credentials from the configuration file
+        self.gmail_user = config['email']
+        self.gmail_password = config['email_password']
 
     def send_email(self, to_email, subject, body):
         """

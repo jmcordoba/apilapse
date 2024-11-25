@@ -1,6 +1,5 @@
 import os
 import hashlib
-import secrets
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 from flask import request, jsonify, make_response
@@ -9,6 +8,7 @@ from src.infra.sqlite3 import Database
 from src.app.shared.email import EmailValidator
 from src.app.shared.password import PasswordValidator
 from src.infra.email.gmail import Sender
+from src.infra.shared.conf import Config
 
 @dataclass
 class UserLogin:
@@ -21,8 +21,12 @@ class UserLogin:
         """
         db = None
         try:
-            # Get the database name from the environment and initialize the database
-            db = Database(os.getenv('database_name'))
+            # Load the configuration from the Config class
+            conf = Config()
+            config = conf.get_config()
+
+            # Get the database name from the environment and Initialize the database
+            db = Database(config['database_name'])
             db.create_connection()
 
             # Get data from form fields
@@ -59,7 +63,10 @@ class UserLogin:
                     'user_uuid': user_uuid,
                     'exp': datetime.utcnow() + timedelta(hours=1)
                 }
-                secret_key = os.getenv('SECRET_KEY', 'your_secret_key')
+                
+                # Get secret key from the configuration
+                secret_key = config['secret_key']
+                
                 access_token = jwt.encode(payload, secret_key, algorithm='HS256')
 
                 # Generate a refresh token
