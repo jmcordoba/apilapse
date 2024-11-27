@@ -60,23 +60,37 @@ class UserCreate:
             # Hash the token
             hashed_token = hashlib.sha256(token.encode()).hexdigest()
 
-            # Generate a UUID
+            # Generate a UUID for user
             user_uuid = str(uuid.uuid4())
+
+            # Generate a UUID for account
+            account_uuid = str(uuid.uuid4())
 
             # Generate dates
             created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             updated_at = ''
+            removed_at = ''
             
+            # Insert the user into the database
             QUERY = """
-            INSERT INTO users (uuid, name, email, password, token, created_at, updated_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (uuid, account_uuid, name, email, password, token, role, created_at, updated_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
             cursor = db.conn.cursor()
-            cursor.execute(QUERY, (user_uuid, name, email, hashed_password, hashed_token, created_at, updated_at))
+            cursor.execute(QUERY, (user_uuid, account_uuid, name, email, hashed_password, hashed_token, 'admin', created_at, updated_at))
             db.conn.commit()
 
             # Get the inserted ID
-            user_id = cursor.lastrowid
+            #user_id = cursor.lastrowid
+            
+            # Insert the account into the database
+            QUERY = """
+            INSERT INTO accounts (account_uuid, plan, periodicity, removed, created_at, updated_at, removed_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """
+            cursor = db.conn.cursor()
+            cursor.execute(QUERY, (account_uuid, 'free', 'monthly', 0, created_at, updated_at, removed_at))
+            db.conn.commit()
 
             # Send email to the customer to validate the account
             sender = Sender()

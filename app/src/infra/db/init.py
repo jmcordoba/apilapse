@@ -30,11 +30,13 @@ class Db:
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY,
                 uuid TEXT NOT NULL,
+                account_uuid TEXT NOT NULL,
                 name TEXT NOT NULL,
                 email TEXT NOT NULL,
                 password TEXT NOT NULL,
                 token TEXT NOT NULL,
                 enabled Boolean DEFAULT 0,
+                role TEXT DEFAULT 'admin',
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             );
@@ -42,31 +44,47 @@ class Db:
             db.execute_query(QUERY)
 
             # Create the tokens table if it doesn't exist
-            tokens_query = """
-            CREATE TABLE IF NOT EXISTS tokens (
+            QUERY = """
+            CREATE TABLE IF NOT EXISTS accounts (
                 id INTEGER PRIMARY KEY,
-                user_id INTEGER NOT NULL,
-                access_token TEXT NOT NULL,
-                refresh_token TEXT NOT NULL,
+                account_uuid TEXT NOT NULL,
+                plan TEXT NOT NULL,
+                periodicity TEXT NOT NULL,
+                removed Boolean DEFAULT 0,
                 created_at TEXT NOT NULL,
-                access_expires_at TEXT NOT NULL,
-                refresh_expires_at TEXT NOT NULL,
-                FOREIGN KEY (user_id) REFERENCES users (id)
+                updated_at TEXT NOT NULL,
+                removed_at TEXT NOT NULL,
+                FOREIGN KEY (account_uuid) REFERENCES users (account_uuid)
             );
             """
-            db.execute_query(tokens_query)
+            db.execute_query(QUERY)
 
-            # Create the password_resets table if it doesn't exist
-            password_resets_query = """
-            CREATE TABLE IF NOT EXISTS password_resets (
-                id INTEGER PRIMARY KEY,
-                user_id INTEGER NOT NULL,
-                token TEXT NOT NULL,
-                expires_at TEXT NOT NULL,
-                FOREIGN KEY (user_id) REFERENCES users (id)
-            );
-            """
-            db.execute_query(password_resets_query)
+            # # Create the tokens table if it doesn't exist
+            # QUERY = """
+            # CREATE TABLE IF NOT EXISTS tokens (
+            #     id INTEGER PRIMARY KEY,
+            #     user_id INTEGER NOT NULL,
+            #     access_token TEXT NOT NULL,
+            #     refresh_token TEXT NOT NULL,
+            #     created_at TEXT NOT NULL,
+            #     access_expires_at TEXT NOT NULL,
+            #     refresh_expires_at TEXT NOT NULL,
+            #     FOREIGN KEY (user_id) REFERENCES users (id)
+            # );
+            # """
+            # db.execute_query(QUERY)
+
+            # # Create the password_resets table if it doesn't exist
+            # QUERY = """
+            # CREATE TABLE IF NOT EXISTS password_resets (
+            #     id INTEGER PRIMARY KEY,
+            #     user_id INTEGER NOT NULL,
+            #     token TEXT NOT NULL,
+            #     expires_at TEXT NOT NULL,
+            #     FOREIGN KEY (user_id) REFERENCES users (id)
+            # );
+            # """
+            # db.execute_query(QUERY)
 
             # Close connection
             db.close_connection()
