@@ -29,7 +29,7 @@ def requests_v1_update_request_by_id(request_uuid):
     Update a request
     """
     request_update = RequestUpdate()
-    response = request_update.update(request_uuid)
+    response = request_update.update(request, request_uuid)
 
     # Ensure response is a tuple and set default status code if not provided
     if isinstance(response, tuple):
