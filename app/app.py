@@ -9,6 +9,7 @@ from routes.health import health
 from routes.hello import hello
 from routes.web import web
 from routes.identity_provider import ip
+from routes.requests import req
 from src.infra.db.init import Db
 from src.infra.shared.conf import Config
 
@@ -19,6 +20,7 @@ app.register_blueprint(hello, url_prefix='')
 app.register_blueprint(web, url_prefix='')
 app.register_blueprint(health, url_prefix='/health')
 app.register_blueprint(ip, url_prefix='/ip/v1')
+app.register_blueprint(req, url_prefix='/requests/v1')
 
 # Purge the log file
 LOG_FILE = 'logs/app.log'

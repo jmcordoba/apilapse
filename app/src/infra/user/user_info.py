@@ -53,6 +53,7 @@ class UserInfo:
             # Get the database name from the environment and Initialize the database
             db = Database(config['database_name'])
             db.create_connection()
+            
             # Retrieve user information using the UUID
             QUERY = """
             SELECT id, uuid, name, email, created_at, updated_at FROM users WHERE uuid = ?
