@@ -61,6 +61,30 @@ class Db:
 
             # Create the tokens table if it doesn't exist
             QUERY = """
+            CREATE TABLE IF NOT EXISTS requests (
+                id INTEGER PRIMARY KEY,
+                account_uuid TEXT NOT NULL,
+                request_uuid TEXT NOT NULL,
+                active Boolean DEFAULT 0,
+                periodicity TEXT NOT NULL,
+                name TEXT NOT NULL,
+                url TEXT NOT NULL,
+                method TEXT NOT NULL,
+                headers TEXT,
+                user_agent TEXT,
+                authentication TEXT NOT NULL,
+                credentials TEXT,
+                body TEXT,
+                tags TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (account_uuid) REFERENCES accounts (account_uuid)
+            );
+            """
+            db.execute_query(QUERY)
+
+            # Create the tokens table if it doesn't exist
+            QUERY = """
             CREATE TABLE IF NOT EXISTS tokens (
                 id INTEGER PRIMARY KEY,
                 user_id INTEGER NOT NULL,

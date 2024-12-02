@@ -37,16 +37,23 @@ def validate():
     """
     return render_template('user/validate.html')
 
-@web.route("/home", methods=['GET'])
-def home():
-    """
-    Return a template
-    """
-    return render_template('user/home.html')
-
 @web.route("/reset_password", methods=['GET'])
 def reset_password():
     """
     Return a template
     """
     return render_template('user/reset_password.html')
+
+@web.route("/home", methods=['GET'])
+def home():
+    """
+    Return a template
+    """
+    return render_template('account/home.html')
+
+@web.route("/requests", methods=['GET'])
+def requests_list():
+    """
+    Return the list of requests
+    """
+    return render_template('requests/list.html')
