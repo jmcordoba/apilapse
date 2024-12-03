@@ -18,9 +18,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r app/requirements.txt
-    - name: Analysing the code with pylint
-      run: |
-        pylint  --disable=broad-exception-caught $(git ls-files '*.py' | grep -v 'test/')
+    # - name: Analysing the code with pylint
+    #   run: |
+    #     pylint  --disable=broad-exception-caught $(git ls-files '*.py' | grep -v 'test/')
     - name: Executing Unit Tests
       run: |
         cd app

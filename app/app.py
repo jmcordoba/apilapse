@@ -36,6 +36,14 @@ logging.basicConfig(level=logging.INFO,
                         logging.StreamHandler()
                     ])
 
+@app.after_request
+def add_security_headers(response):
+    """
+    Add security headers to the response.
+    """
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; '+config['host']
+    return response
+
 if __name__ == "__main__":
 
     # Load the configuration from the Config class

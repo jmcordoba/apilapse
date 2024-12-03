@@ -13,52 +13,45 @@ class RequestCreate:
         """
         Insert a new request into the database.
         """
-        db = None
-        try:
-            # Get the user UUID from the Access Token
-            auth = Authentication()
-            user_uuid = auth.get_user_uuid_from_access_token(request)
+        # Get the user UUID from the Access Token
+        auth = Authentication()
+        user_uuid = auth.get_user_uuid_from_access_token(request)
 
-            # Get the user UUID from the Access Token
-            req = Request()
-            account_uuid = req.get_account_uuid_from_user_uuid(user_uuid)
+        # Get the user UUID from the Access Token
+        req = Request()
+        account_uuid = req.get_account_uuid_from_user_uuid(user_uuid)
 
-            # Get the JSON body parameters
-            body_params = BodyParams()
+        # Get the JSON body parameters
+        body_params = BodyParams()
 
-            active = body_params.get_active(request)
-            periodicity = body_params.get_periodicity(request)
-            name = body_params.get_name(request)
-            url = body_params.get_url(request)
-            method = body_params.get_method(request)
-            headers = body_params.get_headers(request)
-            user_agent = body_params.get_user_agent(request)
-            authentication = body_params.get_authentication(request)
-            credentials = body_params.get_credentials(request)
-            body = body_params.get_body(request)
-            tags = body_params.get_tags(request)
-            
-            # Create the request in DB
-            data = req.create_request(
-                account_uuid, 
-                active, 
-                periodicity, 
-                name, 
-                url, 
-                method, 
-                headers, 
-                user_agent, 
-                authentication, 
-                credentials, 
-                body, 
-                tags)
+        active = body_params.get_active(request)
+        if not isinstance(active, int) or active not in [0, 1]:
+            return {"message": active["message"]}, 400
+        
+        periodicity = body_params.get_periodicity(request)
+        name = body_params.get_name(request)
+        url = body_params.get_url(request)
+        method = body_params.get_method(request)
+        headers = body_params.get_headers(request)
+        user_agent = body_params.get_user_agent(request)
+        authentication = body_params.get_authentication(request)
+        credentials = body_params.get_credentials(request)
+        body = body_params.get_body(request)
+        tags = body_params.get_tags(request)
+        
+        # Create the request in DB
+        data = req.create_request(
+            account_uuid, 
+            active, 
+            periodicity, 
+            name, 
+            url, 
+            method, 
+            headers, 
+            user_agent, 
+            authentication, 
+            credentials, 
+            body, 
+            tags)
 
-            return data, 201
-
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            return {"message": "An error occurred while creating the request"}, 500
-
-        finally:
-            if db:
-                db.close_connection()
+        return data
