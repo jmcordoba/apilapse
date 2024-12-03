@@ -12,5 +12,5 @@ class EmailValidator:
         :param email: The email address to validate.
         :return: True if the email format is valid, False otherwise.
         """
-        email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        email_regex = r'^(?!.*\.\.)(?!.*\.\-)(?!.*\-\.)[a-zA-Z0-9_.+-]+@[a-zA-Z0-9]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$'
         return re.match(email_regex, email) is not None
