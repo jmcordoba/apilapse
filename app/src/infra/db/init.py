@@ -65,7 +65,7 @@ class Db:
                 id INTEGER PRIMARY KEY,
                 account_uuid TEXT NOT NULL,
                 request_uuid TEXT NOT NULL,
-                active Boolean DEFAULT 0,
+                active INTEGER DEFAULT 0,
                 periodicity TEXT NOT NULL,
                 name TEXT NOT NULL,
                 url TEXT NOT NULL,

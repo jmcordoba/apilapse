@@ -14,7 +14,6 @@ def requests_v1_create_request():
     request_create = RequestCreate()
     response = request_create.create(request)
 
-    # Ensure response is a tuple and set default status code if not provided
     if isinstance(response, tuple):
         data, status_code = response
     else:
@@ -31,7 +30,6 @@ def requests_v1_update_request_by_id(request_uuid):
     request_update = RequestUpdate()
     response = request_update.update(request, request_uuid)
 
-    # Ensure response is a tuple and set default status code if not provided
     if isinstance(response, tuple):
         data, status_code = response
     else:
@@ -46,9 +44,8 @@ def requests_v1_get_request_by_id(request_uuid):
     Get request by UUID
     """
     request_get = RequestGet()
-    response = request_get.get(request_uuid)
+    response = request_get.get(request, request_uuid)
 
-    # Ensure response is a tuple and set default status code if not provided
     if isinstance(response, tuple):
         data, status_code = response
     else:
@@ -63,9 +60,8 @@ def requests_v1_get_all():
     Get request by UUID
     """
     request_get = RequestGet()
-    response = request_get.get_all()
+    response = request_get.get_all(request)
 
-    # Ensure response is a tuple and set default status code if not provided
     if isinstance(response, tuple):
         data, status_code = response
     else:
@@ -80,9 +76,8 @@ def requests_v1_delete_request_by_id(request_uuid):
     Get request by UUID
     """
     request_delete = RequestDelete()
-    response = request_delete.delete(request_uuid)
+    response = request_delete.delete(request, request_uuid)
 
-    # Ensure response is a tuple and set default status code if not provided
     if isinstance(response, tuple):
         data, status_code = response
     else:

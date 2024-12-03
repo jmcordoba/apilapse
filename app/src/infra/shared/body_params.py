@@ -15,8 +15,11 @@ class BodyParams:
         # Get data from json body request
         active = request.json.get('active')
         # Validate input data
-        if not isinstance(active, bool):
-            return {"message": "The 'active' parameter must be a boolean"}, 400
+        if active not in [0, 1]:
+            return {
+                "error": True,
+                "message": "The 'active' parameter must be an integer with value 0 or 1"
+            }
         return active
 
     def get_periodicity(self, request):
@@ -25,7 +28,9 @@ class BodyParams:
         periodicity = request.json.get('periodicity')
         # Validate the periodicity parameter
         if not PeriodicityValidator.is_valid_periodicity(periodicity):
-            return {"message": "The 'periodicity' parameter must be 'hourly', 'daily', or 'weekly'"}, 400
+            return {
+                "message": "The 'periodicity' parameter must be 'hourly', 'daily', or 'weekly'"
+            }, 400
         return periodicity
 
     def get_name(self, request):
@@ -33,7 +38,9 @@ class BodyParams:
         name = request.json.get('name')
         # Validate the name parameter
         if not name or name.strip() == "":
-            return {"message": "The 'name' parameter must not be empty"}, 400
+            return {
+                "message": "The 'name' parameter must not be empty"
+            }, 400
         return name
 
     def get_url(self, request):
@@ -41,7 +48,9 @@ class BodyParams:
         url = request.json.get('url')
         # Validate the name parameter
         if not url or url.strip() == "":
-            return {"message": "The 'url' parameter must not be empty"}, 400
+            return {
+                "message": "The 'url' parameter must not be empty"
+            }, 400
         return url
 
     def get_method(self, request):
@@ -49,7 +58,9 @@ class BodyParams:
         method = request.json.get('method')
         # Validate the method parameter
         if not MethodValidator.is_valid_method(method):
-            return {"message": "The 'method' parameter must be 'GET', 'POST', 'PUT', or 'DELETE'"}, 400
+            return {
+                "message": "The 'method' parameter must be 'GET', 'POST', 'PUT', or 'DELETE'"
+            }, 400
         return method
         
     def get_headers(self, request):
@@ -65,7 +76,9 @@ class BodyParams:
         authentication = request.json.get('authentication')
         # Validate the authentication parameter
         if not AuthenticationValidator.is_valid_authentication(authentication):
-            return {"message": "The 'authentication' parameter must be 'None', 'Basic', or 'Bearer'"}, 400
+            return {
+                "message": "The 'authentication' parameter must be 'None', 'Basic', or 'Bearer'"
+            }, 400
         return authentication
 
     def get_credentials(self, request):
