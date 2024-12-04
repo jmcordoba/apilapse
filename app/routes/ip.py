@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, render_template
-from src.infra.user.create import UserCreate
+from src.app.user.create import UserCreate
 from src.infra.user.validate import UserValidate
 from src.infra.user.login import UserLogin
 from src.infra.user.get import UserGet
@@ -18,9 +18,8 @@ def ip_v1_signin():
     """
     Create a new user.
     """
-
     user_create = UserCreate()
-    response = user_create.create()
+    response = user_create.create(request)
 
     # Ensure response is a tuple and set default status code if not provided
     if isinstance(response, tuple):

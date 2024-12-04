@@ -8,7 +8,7 @@ from flask import Flask
 from routes.health import health
 from routes.hello import hello
 from routes.web import web
-from routes.identity_provider import ip
+from routes.ip import ip
 from routes.requests import req
 from src.infra.db.init import Db
 from src.infra.shared.conf import Config

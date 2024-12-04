@@ -31,6 +31,10 @@ class Database:
 
     def execute_query(self, query, params=None):
         """Execute a single query."""
+        if self.conn is None:
+            print("Database connection is not established.")
+            return None
+        
         try:
             cursor = self.conn.cursor()
             if params:

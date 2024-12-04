@@ -2,6 +2,11 @@ from dataclasses import dataclass
 from src.app.shared.periodicity import PeriodicityValidator
 from src.app.shared.method import MethodValidator
 from src.app.shared.authentication import AuthenticationValidator
+from src.app.shared.email import EmailValidator
+from src.app.shared.password import PasswordValidator
+
+from exceptions import EmailValidationError
+from exceptions import PasswordValidationError
 
 @dataclass
 class BodyParams:
@@ -42,6 +47,30 @@ class BodyParams:
                 "message": "The 'name' parameter must not be empty"
             }, 400
         return name
+
+    def get_email(self, request):
+        try:
+            # Get data from json body request
+            email = request.json.get('email')
+            # Validate the name parameter
+            EmailValidator.is_valid_email(email)
+            return email
+        except EmailValidationError as e:
+            raise EmailValidationError(str(e))
+    
+    def get_password(self, request):
+        try:
+            password = request.json.get('password')
+            PasswordValidator.is_valid_password(password)
+            return password
+        except PasswordValidationError as e:
+            raise PasswordValidationError(str(e))
+
+    def get_password2(self, request):
+        password2 = request.json.get('password2')
+        if not PasswordValidator.is_valid_password(password2):
+            return False
+        return password2
 
     def get_url(self, request):
         # Get data from json body request
