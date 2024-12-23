@@ -1,7 +1,9 @@
 from flask import Blueprint, jsonify, request, render_template
 from src.app.user.create import UserCreate
-from src.infra.user.validate import UserValidate
-from src.infra.user.login import UserLogin
+from src.app.user.validate import UserValidate
+from src.app.user.login import UserLogin
+from src.app.user.logout import UserLogout
+
 from src.infra.user.get import UserGet
 from src.infra.user.delete import UserDelete
 from src.infra.user.user_info import UserInfo
@@ -9,7 +11,6 @@ from src.infra.user.user_delete import UserRemove
 from src.infra.user.change_password import UserChangePassword
 from src.infra.user.request_reset_password import UserRequestPasswordReset
 from src.infra.user.reset_password import UserResetPassword
-from src.infra.user.logout import UserLogout
 
 ip = Blueprint('ip', __name__)
 

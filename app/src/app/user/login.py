@@ -1,5 +1,3 @@
-import os
-import hashlib
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 from flask import request, jsonify, make_response
@@ -10,6 +8,13 @@ from src.app.shared.password import PasswordValidator
 from src.infra.email.gmail import Sender
 from src.infra.shared.conf import Config
 
+from src.infra.user.sqlite import User
+
+from src.infra.shared.form_params import FormParams
+
+from exceptions import PasswordValidationError
+from exceptions import EmailValidationError
+
 @dataclass
 class UserLogin:
     """
@@ -19,44 +24,30 @@ class UserLogin:
         """
         Validate user credentials and return an access token.
         """
-        db = None
+
         try:
             # Load the configuration from the Config class
             conf = Config()
             config = conf.get_config()
 
-            # Get the database name from the environment and Initialize the database
-            db = Database(config['database_name'])
-            db.create_connection()
+
+
+            # Get the JSON body parameters
+            form_params = FormParams()
 
             # Get data from form fields
-            email = request.form.get('email')
-            password = request.form.get('password')
+            email = form_params.get_email(request)
+            password = form_params.get_password(request)
 
-            if not email or not password:
-                return {"message": "Email and password are required"}, 400
+            # Get the user information
+            user = User()
+            user_info = user.get_user_by_email(email, password)
 
-            # Validate the password
-            if not EmailValidator.is_valid_email(email):
-                return {"message": "The email address provided is not valid. Please enter a valid email address."}, 400
 
-            # Validate the password
-            if not PasswordValidator.is_valid_password(password):
-                return {"message": "Password must include an uppercase letter, a lowercase letter, a number, and a symbol"}, 400
 
-            # Hash the password
-            hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
-            # Check if the user exists and the password matches
-            QUERY = """
-            SELECT id, uuid, name, email FROM users WHERE email = ? AND password = ? AND enabled=1
-            """
-            cursor = db.conn.cursor()
-            cursor.execute(QUERY, (email, hashed_password))
-            user = cursor.fetchone()
-
-            if user:
-                user_id, user_uuid, name, email = user
+            if user_info:
+                user_id, user_uuid, name, email = user_info
 
                 # Generate an access token
                 payload = {
@@ -99,10 +90,12 @@ class UserLogin:
             else:
                 return {"message": "Invalid email or password"}, 401
 
+        except EmailValidationError as e:
+            return {"message": str(e)}, 400
+        
+        except PasswordValidationError as e:
+            return {"message": str(e)}, 400
+
         except Exception as e:
             print(f"An error occurred: {e}")
             return {"message": "An error occurred while logging in the user"}, 500
-
-        finally:
-            if db:
-                db.close_connection()

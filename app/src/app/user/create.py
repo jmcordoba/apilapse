@@ -12,6 +12,7 @@ from src.infra.shared.conf import Config
 
 from src.infra.shared.body_params import BodyParams
 from src.infra.user.sqlite import User
+from src.infra.account.sqlite import Account
 
 from exceptions import EmailValidationError, PasswordValidationError
 
@@ -24,11 +25,7 @@ class UserCreate:
         """
         Insert a new user into the database.
         """
-        db = None
         try:
-
-            
-
             # Get the JSON body parameters
             body_params = BodyParams()
 
@@ -40,7 +37,6 @@ class UserCreate:
             # Check if passwords match
             if password != password2:
                 return {"message": "Passwords do not match"}, 400
-
 
             # Hash the password
             hashed_password = hashlib.sha256(password.encode()).hexdigest()
@@ -60,44 +56,13 @@ class UserCreate:
             # Generate dates
             created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             
-
+            # Create a new user
             user = User()
             user.create_user(user_uuid, account_uuid, name, email, hashed_password, hashed_token, created_at)
 
-            # # Insert the user into the database
-            # QUERY = """
-            # INSERT INTO users (uuid, account_uuid, name, email, password, token, role, created_at, updated_at) 
-            # VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            # """
-            # cursor = db.conn.cursor()
-            # cursor.execute(QUERY, (user_uuid, account_uuid, name, email, hashed_password, hashed_token, 'admin', created_at, ''))
-            # db.conn.commit()
-
-
-
-
-            # Load the configuration from the Config class
-            conf = Config()
-            config = conf.get_config()
-
-            # Get the database name from the environment and Initialize the database
-            db = Database(config['database_name'])
-            db.create_connection()
-
-            # Insert the account into the database
-            QUERY = """
-            INSERT INTO accounts (account_uuid, plan, periodicity, removed, created_at, updated_at, removed_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """
-            cursor = db.conn.cursor()
-            cursor.execute(QUERY, (account_uuid, 'free', 'monthly', 0, created_at, '', ''))
-            db.conn.commit()
-
-            # account = Account()
-            # account.create_account(account_uuid, 'free', 'monthly', created_at)
-
-
-
+            # Create a new account
+            account = Account()
+            account.create_account(account_uuid, 'free', 'monthly', created_at)
 
             # Send email to the customer to validate the account
             sender = Sender()
@@ -105,6 +70,7 @@ class UserCreate:
             body = 'Hello '+name+','+'\n\n'+'Please click on the link below to validate your account:'+'\n\n'+'http://localhost:8080/validate?token='+token+'&uuid='+user_uuid+'\n\n'+'Thank you,\napilapse Team'
             sender.send_email(email, subject, body)
 
+            # Return the response
             data={
                 "message": "User created successfully, please check your email to validate your account.",
                 "user_uuid": user_uuid,
@@ -126,7 +92,3 @@ class UserCreate:
                 "message": "An error occurred while inserting the user"
             }
             return data, 500
-        
-        finally:
-            if db:
-                db.close_connection()

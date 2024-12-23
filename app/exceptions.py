@@ -49,3 +49,7 @@ class BodyValidationError(Exception):
 class TagsValidationError(Exception):
     """Exception raised for tags validation errors."""
     pass
+
+class UserValidationError(Exception):
+    """Exception raised for user validation errors."""
+    pass

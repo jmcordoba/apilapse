@@ -3,27 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apilapse - API Monitoring Tool</title>
-    <link rel="icon" type="image/png" href="/static/img/favicon.ico">
+    <title>apilapse</title>
+    <link rel="icon" type="image/png" href="/static/img/favicon3.ico">
     <link rel="stylesheet" type="text/css" href="/static/css/index.css">
+
+    <!-- Amplitude -->
+    <script src="https://cdn.amplitude.com/libs/analytics-browser-2.11.1-min.js.gz"></script>
+    <script src="https://cdn.amplitude.com/libs/plugin-session-replay-browser-1.8.0-min.js.gz"></script>
+    <script>window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));window.amplitude.init('bdcb612241f924ed410179278a5289b1', {"serverZone":"EU","autocapture":{"elementInteractions":true}});</script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7KKZKWEWH9"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-7KKZKWEWH9');
+    </script>
+
+    <!-- Clarity -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "pil4d2rm02");
+    </script>
 </head>
 <body>
     <header>
-        <div class="main-container">
+        <div class="main-header">
             <div class="header-container">
-                <h2>apilapse</h2>
+                <h1>apilapse</h1>
                 <nav>
-                    <a href="/login">Login</a>
+                    <button class="getStarted" onclick="window.location.href='/login'">Get Started →</button>
                 </nav>
             </div>
         </div>
     </header>
     <main>
         <div class="main-container">
-            <h2>Welcome to Apilapse</h2>
-            <p>Apilapse is a tool designed to help you monitor the responses of the same API regularly. By comparing the results, you can check if something has changed and receive alerts when changes occur. This ensures that you are always aware of any updates or issues with your APIs.</p>
+            <div class="message">
+                <h2>Prevent service disruptions caused by failing APIs</h2>
+                <h3>Monitor the APIs your application relies on and receive alerts if they fail, ensuring uninterrupted service</h3>
+                <button class="getStarted" onclick="window.location.href='/login'">Get Started →</button>
+            </div>
+        </div>
+        <div class="main-container">
+            <div class="message">
+                <h2>Get started for free</h2>
+                <h3>Ensure seamless application performance and user satisfaction by monitoring the APIs you rely on and receiving instant alerts if they fail</h3>
+                <button class="getStarted" onclick="window.location.href='/login'">Get Started →</button>
+            </div>
         </div>
     </main>
+
     <footer>
         <div class="footer-container">
             <!--nav>
