@@ -1,5 +1,15 @@
+@font-face {
+    font-family: "Geist Mono Regular";
+    src: url("/static/fonts/GeistMono-Regular.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "Geist Mono Light";
+    src: url("/static/fonts/GeistMono-Light.otf") format("opentype");
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: "Geist Mono Regular", monospace;
     margin: 0;
     padding: 0;
     display: flex;
@@ -8,15 +18,25 @@ body {
 }
 
 header {
-    background-color: #007BFF;
-    color: #fff;
-    padding: 10px 20px;
+    background-color: #FFF;
+    color: #007BFF;
+    padding: 30px 20px;
+}
+
+.main-header {
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .header-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.header-container h1 {
+    margin-top: 0;
+    font-size: 24px;
 }
 
 header h1 {
@@ -39,18 +59,62 @@ main {
 }
 
 .main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.message {
     max-width: 800px;
     margin: 0 auto;
+    text-align: center;
+    padding: 80px 0 40px;
+}
+
+.message h2 {
+    margin-top: 0;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: 0px;
+    line-height: 40px;
+    text-align: center;
+    font-style: normal;
+}
+
+.message h3 {
+    margin-top: 0;
+    font-size: 18px;
+    text-align: center;
+    color: grey;
+    font-weight: 400;
+    letter-spacing: 0px;
+    line-height: 40px;
+}
+
+.getStarted {
+    border-radius: 5px;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+}
+
+.getStarted:hover {
+    background-color: #0056b3;
+    cursor: pointer;
 }
 
 footer {
-    background-color: #f0f0f0;
+    background-color: #FFF;
+    color: #007BFF;
     padding: 30px 20px;
     text-align: center;
 }
 
 .footer-container nav a {
-    color: #007BFF;
     text-decoration: none;
     margin: 0 10px;
 }
@@ -60,5 +124,6 @@ footer {
 }
 
 footer p {
+    font-size: 16px;
     margin: 10px 0 0;
 }

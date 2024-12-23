@@ -99,3 +99,27 @@ celerybeat-schedule
 
 # Synology NAS
 .DS_Store
+
+
+
+# frontend app dependencies
+/frontapp/node_modules
+frontapp/.pnp
+frontapp.pnp.js
+
+# testing
+frontapp/coverage
+
+# production
+frontapp/build
+
+# misc
+frontapp/.DS_Store
+frontapp/.env.local
+frontapp/.env.development.local
+frontapp/.env.test.local
+frontapp/.env.production.local
+
+frontapp/npm-debug.log*
+frontapp/yarn-debug.log*
+frontapp/yarn-error.log*

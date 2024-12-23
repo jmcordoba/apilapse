@@ -5,7 +5,7 @@ import unittest
 import os
 from unittest.mock import patch, MagicMock
 from flask import Flask, request
-from src.infra.user.create import UserCreate
+from app.src.infra.user.delete_create import UserCreate
 
 class TestUserCreate(unittest.TestCase):
     """
