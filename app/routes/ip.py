@@ -3,14 +3,16 @@ from src.app.user.create import UserCreate
 from src.app.user.validate import UserValidate
 from src.app.user.login import UserLogin
 from src.app.user.logout import UserLogout
+from src.app.user.delete import UserDelete
 
 from src.infra.user.get import UserGet
-from src.infra.user.delete import UserDelete
 from src.infra.user.user_info import UserInfo
 from src.infra.user.user_delete import UserRemove
 from src.infra.user.change_password import UserChangePassword
 from src.infra.user.request_reset_password import UserRequestPasswordReset
 from src.infra.user.reset_password import UserResetPassword
+
+from exceptions import UserValidationError
 
 ip = Blueprint('ip', __name__)
 
@@ -113,20 +115,26 @@ def db_get():
 @ip.route("/user/<int:id>", methods=['DELETE'])
 def delete_user(id):
     """
-    Delete a user by their ID.
+    Delete a user by Id.
     """
-    user_delete = UserDelete()
-    message = user_delete.delete_user_by_id(id)
-    return jsonify({"message": message}), 200, {'Access-Control-Allow-Origin': '*'}
+    try:
+        user_delete = UserDelete()
+        message = user_delete.delete_user_by_id(id)
+        return jsonify({"message": message}), 200, {'Access-Control-Allow-Origin': '*'}
+    except UserValidationError as e:
+        return {"message": str(e)}, 400
 
 @ip.route("/users", methods=['DELETE'])
 def delete_all_users():
     """
     Delete all users from the database.
     """
-    user_delete = UserDelete()
-    message = user_delete.delete_all_users()
-    return jsonify({"message": message}), 200, {'Access-Control-Allow-Origin': '*'}
+    try:
+        user_delete = UserDelete()
+        message = user_delete.delete_all_users()
+        return jsonify({"message": message}), 200, {'Access-Control-Allow-Origin': '*'}
+    except UserValidationError as e:
+        return {"message": str(e)}, 400
 
 @ip.route("/change_password", methods=['POST'])
 def change_password():

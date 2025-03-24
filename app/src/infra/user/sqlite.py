@@ -107,3 +107,59 @@ class User:
         user = cursor.fetchone()
 
         return user
+    
+    def delete_user_by_id(self, user_id):
+        """
+        Delete a user by their ID
+        """
+
+        # Check if the user exists and the password matches
+        QUERY = """
+        SELECT id FROM users WHERE id = ? AND enabled=1
+        """
+
+        conf = Config()
+        config = conf.get_config()
+        db = Database(config['database_name'])
+        db.create_connection()
+
+        user = db.fetch_one(QUERY, (user_id,))
+
+        if not user:
+            raise UserValidationError("User Id does not exist")
+    
+        QUERY = """
+        DELETE FROM users WHERE id = ? AND enabled=1
+        """
+        db.execute_query(QUERY, (user_id,))
+
+    def delete_all_users(self):
+        """
+        Delete all users from the database
+        """
+
+        # Check if the user exists and the password matches
+        QUERY = """
+        SELECT id FROM users limit 1
+        """
+
+        conf = Config()
+        config = conf.get_config()
+        db = Database(config['database_name'])
+        db.create_connection()
+
+        user = db.fetch_one(QUERY, ())
+
+        if not user:
+            raise UserValidationError("There is no users to delete")
+
+        QUERY = """
+        DELETE FROM users
+        """
+
+        conf = Config()
+        config = conf.get_config()
+        db = Database(config['database_name'])
+        db.create_connection()
+        
+        db.execute_query(QUERY, ())
