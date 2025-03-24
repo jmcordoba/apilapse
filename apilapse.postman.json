@@ -1,0 +1,749 @@
+{
+	"info": {
+		"_postman_id": "5d2deb23-8f2a-4fd4-a7a8-110c5afbc135",
+		"name": "apilapse",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28534333"
+	},
+	"item": [
+		{
+			"name": "Identity Provider",
+			"item": [
+				{
+					"name": "Sign In",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response status is 200\", () => {",
+									"  pm.expect(pm.response.code).to.eql(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains token\", () => {",
+									"  pm.expect(jsonData.token).to.exist;",
+									"});",
+									"",
+									"//pm.test(\"Token received in cookies\", () => {",
+									"//  pm.expect(pm.cookies.has('access-token')).to.exist;",
+									"//});",
+									"",
+									"//var jsonData = JSON.parse(responseBody);",
+									"//pm.collectionVariables.set(\"authToken\", jsonData.token);",
+									"",
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"email\", jsonData.email);",
+									"pm.environment.set(\"token\", jsonData.token);",
+									"pm.environment.set(\"user_uuid\", jsonData.user_uuid);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Juanma10\",\n    \"email\": \"jmcordoba@gmail.com\",\n    \"password\": \"Aa12345678.\",\n    \"password2\": \"Aa12345678.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/ip/v1/signin",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ip",
+								"v1",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "jmcordoba@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Bimyou.20",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/ip/v1/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ip",
+								"v1",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"current_password\": \"hola_caracola.100\",\n    \"new_password\": \"hola_caracola.100\",\n    \"new_password2\": \"hola_caracola.100\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/ip/v1/change_password",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ip",
+								"v1",
+								"change_password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Token",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/ip/v1/validate?uuid={{user_uuid}}&token={{token}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ip",
+								"v1",
+								"validate"
+							],
+							"query": [
+								{
+									"key": "uuid",
+									"value": "{{user_uuid}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/ip/v1/users",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ip",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User by Id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/ip/v1/user/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ip",
+								"v1",
+								"user",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Info Auth",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/ip/v1/me",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ip",
+								"v1",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response status is 200\", () => {",
+									"  pm.expect(pm.response.code).to.eql(200);",
+									"});",
+									"",
+									"pm.test(\"Token received in cookies\", () => {",
+									"  pm.expect(pm.cookies.has('access-token')).to.exist;",
+									"});",
+									"",
+									"//var jsonData = JSON.parse(responseBody);",
+									"//pm.collectionVariables.set(\"authToken\", jsonData.token);",
+									"",
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"token\", jsonData.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/ip/v1/reset_password?email=jmcordoba@gmail.com",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ip",
+								"v1",
+								"reset_password"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "jmcordoba@gmail.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"{{token}}\",\n    \"new_password\": \"hola_caracola.10\",\n    \"new_password2\": \"hola_caracola.10\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/ip/v1/reset_password",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ip",
+								"v1",
+								"reset_password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Info Auth",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/ip/v1/me",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ip",
+								"v1",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User by Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/ip/v1/user/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ip",
+								"v1",
+								"user",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All Users",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/ip/v1/users",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ip",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "web",
+			"item": [
+				{
+					"name": "Login",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Juanma\",\n    \"email\": \"jmcordoba@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080",
+							"host": [
+								"localhost"
+							],
+							"port": "8080"
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Requests",
+			"item": [
+				{
+					"name": "Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response status is 201\", () => {",
+									"  pm.expect(pm.response.code).to.eql(201);",
+									"});",
+									"",
+									"//pm.test(\"Response contains token\", () => {",
+									"//  pm.expect(jsonData.token).to.exist;",
+									"//});",
+									"",
+									"pm.test(\"Token received in cookies\", () => {",
+									"  pm.expect(pm.cookies.has('access-token')).to.exist;",
+									"});",
+									"",
+									"//var jsonData = JSON.parse(responseBody);",
+									"//pm.collectionVariables.set(\"request_uuid\", jsonData.request_uuid);",
+									"",
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"request_uuid\", jsonData.request_uuid);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"active\": false,\n    \"periodicity\": \"daily\",\n    \"name\": \"test\",\n    \"url\": \"https://www.juanmacordoba.com/as\",\n    \"method\": \"GET\",\n    \"headers\": \"\",\n    \"user_agent\": \"\",\n    \"authentication\": \"None\",\n    \"credentials\": \"blablabla\",\n    \"body\": \"\",\n    \"tags\": \"juanmacordoba\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/requests/v1/request",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"requests",
+								"v1",
+								"request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"active\": true,\n    \"periodicity\": \"daily\",\n    \"name\": \"test\",\n    \"url\": \"https://www.juanmacordoba.com/as\",\n    \"method\": \"POST\",\n    \"headers\": \"\",\n    \"user_agent\": \"\",\n    \"authentication\": \"None\",\n    \"credentials\": \"blibuyyulibli\",\n    \"body\": \"\",\n    \"tags\": \"juanmacordobaaaa\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/requests/v1/request/{{request_uuid}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"requests",
+								"v1",
+								"request",
+								"{{request_uuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request by Id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"active\": false,\n    \"periodicity\": \"daily\",\n    \"name\": \"first\",\n    \"url\": \"https://www.juanmacordoba.com/as\",\n    \"method\": \"GET\",\n    \"headers\": \"\",\n    \"user_agent\": \"\",\n    \"authentication\": \"None\",\n    \"body\": \"\",\n    \"tags\": \"juanmacordoba\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/requests/v1/request/{{request_uuid}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"requests",
+								"v1",
+								"request",
+								"{{request_uuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"active\": false,\n    \"periodicity\": \"daily\",\n    \"name\": \"first\",\n    \"url\": \"https://www.juanmacordoba.com/as\",\n    \"method\": \"GET\",\n    \"headers\": \"\",\n    \"user_agent\": \"\",\n    \"authentication\": \"None\",\n    \"body\": \"\",\n    \"tags\": \"juanmacordoba\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/requests/v1/all",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"requests",
+								"v1",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete by Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"active\": false,\n    \"periodicity\": \"daily\",\n    \"name\": \"first\",\n    \"url\": \"https://www.juanmacordoba.com/as\",\n    \"method\": \"GET\",\n    \"headers\": \"\",\n    \"user_agent\": \"\",\n    \"authentication\": \"None\",\n    \"body\": \"\",\n    \"tags\": \"juanmacordoba\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/requests/v1/request/{{request_uuid}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"requests",
+								"v1",
+								"request",
+								"{{request_uuid}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Status",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Juanma\",\n    \"email\": \"jmcordoba@gmail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/health/v1/status",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"health",
+						"v1",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Hello",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Juanma\",\n    \"email\": \"jmcordoba@gmail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/hello",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"hello"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
