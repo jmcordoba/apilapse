@@ -34,9 +34,10 @@ Now you can copy the id_rsa content and paste it in Github.
 ### Install
 To clone and install the application:
 ```bash
-git clone git@github.com:jmcordoba/synology_flask.git
+git clone git@github.com:jmcordoba/apilapse.git
 python3 -m venv .venv
 source .venv/bin/activate
+python3 -m pip install --upgrade pip
 pip3 install -r requirements.txt
 ```
 
