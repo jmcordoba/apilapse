@@ -30,8 +30,6 @@ class UserLogin:
             conf = Config()
             config = conf.get_config()
 
-
-
             # Get the JSON body parameters
             form_params = FormParams()
 
@@ -43,9 +41,7 @@ class UserLogin:
             user = User()
             user_info = user.get_user_by_email(email, password)
 
-
-
-
+            # Validate email and password
             if user_info:
                 user_id, user_uuid, name, email = user_info
 

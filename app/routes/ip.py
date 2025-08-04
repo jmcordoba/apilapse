@@ -55,8 +55,16 @@ def ip_v1_validate_user():
     Validate a user token.
     """
     user_validate = UserValidate()
-    result = user_validate.validate_token()
-    return jsonify(result), 200, {'Access-Control-Allow-Origin': '*'}
+    response = user_validate.validate_token()
+
+    # Ensure response is a tuple and set default status code if not provided
+    if isinstance(response, tuple):
+        data, status_code = response
+        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
+    else:
+        return response
+    
+    #return jsonify(result), 200, {'Access-Control-Allow-Origin': '*'}
 
 @ip.route("/me", methods=['GET'])
 def ip_v1_me():
