@@ -2,6 +2,8 @@ import jwt
 from dataclasses import dataclass
 from src.infra.shared.conf import Config
 
+from exceptions import AuthenticationValidationError
+
 @dataclass
 class Authentication:
     """
@@ -16,7 +18,8 @@ class Authentication:
         access_token = request.cookies.get('Access-Token')
 
         if not access_token:
-            return {"message": "Access Token is required"}, 401
+            #return {"message": "Access Token is required"}, 401
+            raise AuthenticationValidationError("Access Token is required")
 
         # Load the configuration from the Config class
         conf = Config()

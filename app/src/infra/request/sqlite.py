@@ -1,6 +1,8 @@
 import uuid
+
 from datetime import datetime
 from dataclasses import dataclass
+
 from src.infra.sqlite3 import Database
 from src.infra.shared.conf import Config
 
@@ -30,18 +32,26 @@ class Request:
         QUERY = """
         SELECT account_uuid FROM users WHERE uuid = ?
         """
-        cursor = self.db.conn.cursor()
-        cursor.execute(QUERY, (user_uuid,))
-        user = cursor.fetchone()
 
-        if user:
-            account_uuid = user[0]
-        else:
-            return {
-                "message": "User not found"
-            }, 404
+        print(f"User UUID: {user_uuid}")
 
-        return account_uuid
+        # conf = Config()
+        # config = conf.get_config()
+        # db = Database(config['database_name'])
+        # db.create_connection()
+
+        # cursor = db.conn.cursor()
+        # cursor.execute(QUERY, (user_uuid,))
+        # user = cursor.fetchone()
+
+        # if not user:
+        #     raise UserValidationError("There is no users to delete")
+
+        # print(f"User found: {user}")
+
+        #account_uuid = user[0]
+
+        return "hol"
     
     def get_account_uuid_from_request_uuid(self, request_uuid, account_uuid):
         """
