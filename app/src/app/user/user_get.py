@@ -6,6 +6,7 @@ import sqlite3
 from dataclasses import dataclass
 from src.infra.sqlite3 import Database
 from src.infra.shared.conf import Config
+from src.infra.user.sqlite import User
 
 @dataclass
 class UserGet:
@@ -18,16 +19,11 @@ class UserGet:
         Retrieve all users from the database.
         """
         try:
-            # Load the configuration from the Config class
-            conf = Config()
-            config = conf.get_config()
-
-            # Get the database name from the environment and Initialize the database
-            db = Database(config['database_name'])
-            db.create_connection()
+            # Create a User instance to interact with the database
+            user = User()
 
             # Read all rows
-            rows = db.fetch_all("SELECT * FROM users")
+            rows = user.get_all_users()
 
             # Return the content of the rows
             return rows
@@ -38,23 +34,20 @@ class UserGet:
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
             return None
-        finally:
-            if db:
-                db.close_connection()
+
 
     def get_user_by_id(self, id):
         """
         Retrieve a user by ID from the database.
         """
         try:
-            # Get the database name from the environment and initialize the database
-            db = Database(os.getenv('database_name'))
-            db.create_connection()
+            # Create a User instance to interact with the database
+            user = User()
 
-            # Read the row
-            row = db.fetch_one("SELECT * FROM users WHERE id=?", (id,))
+            # Read all rows
+            row = user.get_user_by_id(id)
 
-            # Return the content of the row
+            # Return the content of the rows
             return row
 
         except sqlite3.Error as e:
@@ -63,6 +56,3 @@ class UserGet:
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
             return None
-        finally:
-            if db:
-                db.close_connection()

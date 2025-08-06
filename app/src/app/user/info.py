@@ -5,18 +5,19 @@ from dataclasses import dataclass
 from flask import request, jsonify, make_response
 from src.infra.sqlite3 import Database
 from src.infra.shared.conf import Config
+from src.infra.user.sqlite import User
 
 @dataclass
-class UserInfo:
+class Me:
     """
     Class responsible for returning the information of a user.
     """
-    def user_info(self):
+    def info(self):
         """
         Retrieve user information using the Access Token from the cookie.
         """
-        db = None
         try:
+
             # Get the Access Token from the cookie
             access_token = request.cookies.get('Access-Token')
             refresh_token = request.cookies.get('Refresh-Token')
@@ -50,40 +51,33 @@ class UserInfo:
             except jwt.InvalidTokenError:
                 return {"message": "Invalid Access Token"}, 401
 
-            # Get the database name from the environment and Initialize the database
-            db = Database(config['database_name'])
-            db.create_connection()
-            
-            # Retrieve user information using the UUID
-            QUERY = """
-            SELECT id, uuid, name, email, created_at, updated_at FROM users WHERE uuid = ?
-            """
-            cursor = db.conn.cursor()
-            cursor.execute(QUERY, (user_uuid,))
-            user = cursor.fetchone()
 
-            if user:
-                user_info = {
-                    "id": user[0],
-                    "uuid": user[1],
-                    "name": user[2],
-                    "email": user[3],
-                    "created_at": user[4],
-                    "updated_at": user[5]
-                }
-                # Create response
-                resp = make_response(jsonify(user_info), 200)
-                resp.set_cookie('Access-Token', access_token, httponly=True, secure=True, samesite='Lax')
-                resp.set_cookie('Refresh-Token', refresh_token, httponly=True, secure=True, samesite='Lax')
 
-                return resp
-            else:
-                return {"message": "User not found"}, 404
+            # Create a User instance to interact with the database
+            user = User()
+
+            # Check if the current password is correct
+            data = user.get_user_by_uuid(user_uuid)
+
+            #if not data:
+            #    return {"message": "User not found"}, 404
+
+            response = {
+                "id": data[0],
+                "uuid": data[1],
+                "name": data[2],
+                "email": data[3],
+                "created_at": data[4],
+                "updated_at": data[5]
+            }
+
+            # Create response
+            resp = make_response(jsonify(response), 200)
+            resp.set_cookie('Access-Token', access_token, httponly=True, secure=True, samesite='Lax')
+            resp.set_cookie('Refresh-Token', refresh_token, httponly=True, secure=True, samesite='Lax')
+
+            return resp
 
         except Exception as e:
             print(f"An error occurred: {e}")
             return {"message": "An error occurred while retrieving user information"}, 500
-
-        finally:
-            if db:
-                db.close_connection()

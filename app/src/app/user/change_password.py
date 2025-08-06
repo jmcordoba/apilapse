@@ -6,6 +6,8 @@ from flask import request, jsonify, make_response
 from src.infra.sqlite3 import Database
 from src.infra.shared.conf import Config
 
+from src.infra.user.sqlite import User
+
 @dataclass
 class UserChangePassword:
     """
@@ -15,8 +17,9 @@ class UserChangePassword:
         """
         Retrieve user information using the Access Token from the cookie.
         """
-        db = None
+
         try:
+
             # Get the Access Token from the cookie
             access_token = request.cookies.get('Access-Token')
             refresh_token = request.cookies.get('Refresh-Token')
@@ -50,6 +53,8 @@ class UserChangePassword:
             except jwt.InvalidTokenError:
                 return {"message": "Invalid Access Token"}, 401
 
+
+
             # Get data from json fields
             current_password = request.json.get('current_password')
             new_password = request.json.get('new_password')
@@ -64,37 +69,29 @@ class UserChangePassword:
             # Hash the current password
             hashed_current_password = hashlib.sha256(current_password.encode()).hexdigest()
 
-            # Get the database name from the environment and Initialize the database
-            db = Database(config['database_name'])
-            db.create_connection()
-
-            # Verify the current password
-            verify_query = """
-            SELECT id FROM users WHERE uuid = ? AND password = ?
-            """
-            cursor = db.conn.cursor()
-            cursor.execute(verify_query, (user_uuid, hashed_current_password))
-            user = cursor.fetchone()
-
-            if not user:
-                return {"message": "Current password is incorrect"}, 401
-
             # Hash the new password
             hashed_new_password = hashlib.sha256(new_password.encode()).hexdigest()
 
-            # Update the password
-            update_query = """
-            UPDATE users SET password = ? WHERE uuid = ?
-            """
-            cursor.execute(update_query, (hashed_new_password, user_uuid))
-            db.conn.commit()
+            
 
-            return {"message": "Password changed successfully"}, 200
+            # Create a User instance to interact with the database
+            user = User()
+
+            # Check if the current password is correct
+            data = user.is_current_password_correct(user_uuid, hashed_current_password)
+            if not data:
+                return {
+                    "message": "Current password is incorrect",
+                    "user_uuid": user_uuid}, 401
+            
+            # Update the user's password
+            user.update_current_password(user_uuid, hashed_new_password)
+            
+            # Send a confirmation email
+            return {
+                "message": "Password changed successfully",
+                "user_uuid": user_uuid}, 200    
 
         except Exception as e:
             print(f"An error occurred: {e}")
             return {"message": "An error occurred while changing the password"}, 500
-
-        finally:
-            if db:
-                db.close_connection()

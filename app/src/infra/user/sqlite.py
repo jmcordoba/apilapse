@@ -85,6 +85,26 @@ class User:
         """
         db.execute_query(QUERY, (updated_at, user_id,))
 
+
+    def disable_user_by_uuid(self, user_uuid):
+        """
+        Disable the user by user_uuid
+        """
+
+        conf = Config()
+        config = conf.get_config()
+        db = Database(config['database_name'])
+        db.create_connection()
+
+        # Update the user to set validated
+        updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        QUERY = """
+        UPDATE users SET enabled = 0, updated_at = ? WHERE uuid = ?
+        """
+        db.execute_query(QUERY, (updated_at, user_uuid,))
+
+
     def get_user_by_email(self, email, password):
         """
         Get the user by email
@@ -108,6 +128,99 @@ class User:
 
         return user
     
+    def get_user_by_uuid(self, user_uuid):
+
+        """
+        Get the user by UUID
+        """
+        # Check if the user exists and the password matches
+        QUERY = """
+        SELECT id, uuid, name, email, created_at, updated_at, account_uuid 
+        FROM users 
+        WHERE uuid = ? AND enabled=1
+        """
+
+        conf = Config()
+        config = conf.get_config()
+        db = Database(config['database_name'])
+        db.create_connection()
+
+        cursor = db.conn.cursor()
+        cursor.execute(QUERY, (user_uuid,))
+        user = cursor.fetchone()
+
+        if not user:
+            raise UserValidationError("User UUID does not exist")
+        
+        return user
+    
+        
+    def get_user_by_id(self, user_id):
+
+        """
+        Get the user by ID
+        """
+        # Check if the user exists and the password matches
+        QUERY = """
+        SELECT id, uuid, name, email, created_at, updated_at, account_uuid 
+        FROM users 
+        WHERE id = ?
+        """
+
+        conf = Config()
+        config = conf.get_config()
+        db = Database(config['database_name'])
+        db.create_connection()
+
+        cursor = db.conn.cursor()
+        cursor.execute(QUERY, (user_id,))
+        user = cursor.fetchone()
+
+        if not user:
+            raise UserValidationError("User ID does not exist")
+        
+        # Get column names from cursor description
+        column_names = [desc[0] for desc in cursor.description]
+        
+        # Combine column names with the user data
+        user_dict = dict(zip(column_names, user))
+        
+        return user_dict
+    
+
+    def get_all_users(self):
+
+        """
+        Get all users
+        """
+        # Check if the user exists and the password matches
+        QUERY = """
+        SELECT * FROM users 
+        """
+
+        conf = Config()
+        config = conf.get_config()
+        db = Database(config['database_name'])
+        db.create_connection()
+
+        cursor = db.conn.cursor()
+        cursor.execute(QUERY, )
+        rows = cursor.fetchall()
+        
+        # Get column names from cursor description
+        column_names = [desc[0] for desc in cursor.description]
+        
+        # Combine column names with rows to create a list of dictionaries
+        users = [dict(zip(column_names, row)) for row in rows]
+        
+        #print(f"users: {users}")
+
+        if not users:
+            raise UserValidationError("Users table is empty")
+        
+        return users
+    
+
     def delete_user_by_id(self, user_id):
         """
         Delete a user by their ID
@@ -163,3 +276,39 @@ class User:
         db.create_connection()
         
         db.execute_query(QUERY, ())
+    
+    def is_current_password_correct(self, user_uuid, hashed_current_password):
+
+        # Check if the user exists and the password matches
+        QUERY = """
+        SELECT id FROM users WHERE uuid = ? AND password = ?
+        """
+
+        conf = Config()
+        config = conf.get_config()
+        db = Database(config['database_name'])
+        db.create_connection()
+
+        data = db.fetch_one(QUERY, (user_uuid, hashed_current_password))
+
+        print(f"user_uuid: {user_uuid}")
+
+        return data
+
+    def update_current_password(self, user_uuid, hashed_new_password):
+
+        # Update the user to set validated
+        updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        QUERY = """
+        UPDATE users SET password = ?, updated_at = ? WHERE uuid = ?
+        """
+
+        conf = Config()
+        config = conf.get_config()
+        db = Database(config['database_name'])
+        db.create_connection()
+
+        data = db.execute_query(QUERY, (hashed_new_password, updated_at, user_uuid,))
+
+        return data

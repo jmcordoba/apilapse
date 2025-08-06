@@ -20,7 +20,7 @@ class UserDelete:
             # Get the user information
             user = User()
             user.delete_user_by_id(user_id)
-
+            return "User deleted by id successfully"
         except UserValidationError as e:
             raise UserValidationError(str(e))
 

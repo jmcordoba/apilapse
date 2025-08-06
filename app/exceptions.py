@@ -53,3 +53,7 @@ class TagsValidationError(Exception):
 class UserValidationError(Exception):
     """Exception raised for user validation errors."""
     pass
+
+class AccountValidationError(Exception):
+    """Exception raised for account validation errors."""
+    pass

@@ -67,7 +67,7 @@ class UserCreate:
             # Send email to the customer to validate the account
             sender = Sender()
             subject = 'apilapse | validate account'
-            body = 'Hello '+name+','+'\n\n'+'Please click on the link below to validate your account:'+'\n\n'+'http://localhost:8080/validate?token='+token+'&uuid='+user_uuid+'\n\n'+'Thank you,\napilapse Team'
+            body = 'Hello '+name+','+'\n\n'+'Please click on the link below to validate your account:'+'\n\n'+'http://localhost:8080/validate?token='+token+'&uuid='+user_uuid+'\n\n'+'Thank you,\napilapse'
             sender.send_email(email, subject, body)
 
             # Return the response

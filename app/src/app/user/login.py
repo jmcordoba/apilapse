@@ -74,7 +74,7 @@ class UserLogin:
                 sender = Sender()
                 to_email = 'jmcordoba@gmail.com'
                 subject = 'apilapse | login'
-                body = 'Hello '+name+',\n\n'+'You have already logged in.'+'\n\n'+'Thank you,\napilapse Team'
+                body = 'Hello '+name+',\n\n'+'You have already logged in.'+'\n\n'+'Thank you,\napilapse'
                 sender.send_email(to_email, subject, body)
 
                 # Set the access token and refresh token as HTTP-only cookies

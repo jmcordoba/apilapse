@@ -4,13 +4,10 @@ from src.app.user.validate import UserValidate
 from src.app.user.login import UserLogin
 from src.app.user.logout import UserLogout
 from src.app.user.delete import UserDelete
-
-from src.infra.user.get import UserGet
-from src.infra.user.user_info import UserInfo
-from src.infra.user.user_delete import UserRemove
-from src.infra.user.change_password import UserChangePassword
-from src.infra.user.request_reset_password import UserRequestPasswordReset
-from src.infra.user.reset_password import UserResetPassword
+from src.app.user.change_password import UserChangePassword
+from src.app.user.info import Me
+from src.app.user.user_remove import UserRemove
+from src.app.user.user_get import UserGet
 
 from exceptions import UserValidationError
 
@@ -32,6 +29,7 @@ def ip_v1_signin():
         status_code = 200
 
     return jsonify(data), status_code, {'Access-Control-Allow-Origin':'*'}
+
 
 @ip.route("/login", methods=['POST'])
 def ip_v1_login_user():
@@ -64,15 +62,14 @@ def ip_v1_validate_user():
     else:
         return response
     
-    #return jsonify(result), 200, {'Access-Control-Allow-Origin': '*'}
 
 @ip.route("/me", methods=['GET'])
 def ip_v1_me():
     """
     Retrieve user information using the Access Token from the cookie.
     """
-    user_info = UserInfo()
-    response = user_info.user_info()
+    me = Me()
+    response = me.info()
     
     # Ensure response is a tuple and set default status code if not provided
     if isinstance(response, tuple):
@@ -82,6 +79,7 @@ def ip_v1_me():
         return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
     else:
         return response
+
 
 @ip.route("/me", methods=['DELETE'])
 def ip_v1_remove_user():
@@ -98,27 +96,33 @@ def ip_v1_remove_user():
     else:
         return response
 
+
 @ip.route("/user/<int:id>", methods=['GET'])
 def ip_v1_user_by_id(id):
     """
     Retrieve a user by their ID.
     """
 
-    user_get = UserGet()
-    rows = user_get.get_user_by_id(id)
+    try:
+        user_get = UserGet()
+        row = user_get.get_user_by_id(id)
+        return jsonify(row), 200, {'Access-Control-Allow-Origin': '*'}
+    except UserValidationError as e:
+        return {"message": str(e)}, 400
 
-    return jsonify({"rows": rows}), 200, {'Access-Control-Allow-Origin': '*'}
 
 @ip.route("/users", methods=['GET'])
 def db_get():
     """
     Get all users from the database.
     """
+    try:
+        user_get = UserGet()
+        rows = user_get.get_all_users()
+        return jsonify(rows), 200, {'Access-Control-Allow-Origin': '*'}
+    except UserValidationError as e:
+        return {"message": str(e)}, 400
 
-    user_get = UserGet()
-    rows = user_get.get_all_users()
-
-    return jsonify({"rows": rows}), 200, {'Access-Control-Allow-Origin': '*'}
 
 @ip.route("/user/<int:id>", methods=['DELETE'])
 def delete_user(id):
@@ -132,6 +136,7 @@ def delete_user(id):
     except UserValidationError as e:
         return {"message": str(e)}, 400
 
+
 @ip.route("/users", methods=['DELETE'])
 def delete_all_users():
     """
@@ -143,6 +148,7 @@ def delete_all_users():
         return jsonify({"message": message}), 200, {'Access-Control-Allow-Origin': '*'}
     except UserValidationError as e:
         return {"message": str(e)}, 400
+
 
 @ip.route("/change_password", methods=['POST'])
 def change_password():
@@ -159,35 +165,6 @@ def change_password():
     else:
         return response
 
-@ip.route("/reset_password", methods=['GET'])
-def request_password_reset():
-    """
-    Request a password reset token.
-    """
-    user_request_password_reset = UserRequestPasswordReset()
-    response = user_request_password_reset.request_reset()
-    
-    # Ensure response is a tuple and set default status code if not provided
-    if isinstance(response, tuple):
-        data, status_code = response
-        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
-    else:
-        return response
-
-@ip.route("/reset_password", methods=['POST'])
-def reset_password():
-    """
-    Reset the user's password using the token.
-    """
-    user_reset_password = UserResetPassword()
-    response = user_reset_password.reset_password()
-    
-    # Ensure response is a tuple and set default status code if not provided
-    if isinstance(response, tuple):
-        data, status_code = response
-        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
-    else:
-        return response
 
 @ip.route("/logout", methods=['POST'])
 def logout_user():
@@ -203,3 +180,4 @@ def logout_user():
         return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
     else:
         return response
+
