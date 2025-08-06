@@ -1,11 +1,78 @@
 {
 	"info": {
-		"_postman_id": "5d2deb23-8f2a-4fd4-a7a8-110c5afbc135",
+		"_postman_id": "9689b3a0-d892-46b8-b8b9-d7217dbb5f40",
 		"name": "apilapse",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "28534333"
+		"_exporter_id": "3877831"
 	},
 	"item": [
+		{
+			"name": "01",
+			"item": [
+				{
+					"name": "01 Hello",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Juanma\",\n    \"email\": \"jmcordoba@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/hello",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"hello"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "02 Status",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Juanma\",\n    \"email\": \"jmcordoba@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/health/v1/status",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"health",
+								"v1",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
 		{
 			"name": "Identity Provider",
 			"item": [
@@ -87,7 +154,7 @@
 								},
 								{
 									"key": "password",
-									"value": "Bimyou.20",
+									"value": "Aa12345678.",
 									"type": "text"
 								}
 							]
@@ -108,13 +175,74 @@
 					"response": []
 				},
 				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "jmcordoba@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Aa12345678.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/ip/v1/logout",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"ip",
+								"v1",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Change Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response status is 200\", () => {",
+									"  pm.expect(pm.response.code).to.eql(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains user_uuid\", () => {",
+									"  pm.expect(jsonData.user_uuid).to.exist;",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"console.log(\"[POST] /change_password - response:\")",
+									"console.log(jsonData)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"current_password\": \"hola_caracola.100\",\n    \"new_password\": \"hola_caracola.100\",\n    \"new_password2\": \"hola_caracola.100\"\n}",
+							"raw": "{\n    \"current_password\": \"hola_caracola.100\",\n    \"new_password\": \"Hola_caracola.100\",\n    \"new_password2\": \"Hola_caracola.100\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -138,6 +266,32 @@
 				},
 				{
 					"name": "Validate Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response status is 200\", () => {",
+									"  pm.expect(pm.response.code).to.eql(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains user_uuid\", () => {",
+									"  pm.expect(jsonData.user_uuid).to.exist;",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"console.log(\"[POST] /validate - response:\")",
+									"console.log(jsonData)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -244,7 +398,7 @@
 					"response": []
 				},
 				{
-					"name": "User Info Auth",
+					"name": "Me",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -276,102 +430,7 @@
 					"response": []
 				},
 				{
-					"name": "Reset Password",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response status is 200\", () => {",
-									"  pm.expect(pm.response.code).to.eql(200);",
-									"});",
-									"",
-									"pm.test(\"Token received in cookies\", () => {",
-									"  pm.expect(pm.cookies.has('access-token')).to.exist;",
-									"});",
-									"",
-									"//var jsonData = JSON.parse(responseBody);",
-									"//pm.collectionVariables.set(\"authToken\", jsonData.token);",
-									"",
-									"var jsonData = pm.response.json();",
-									"pm.environment.set(\"token\", jsonData.token);"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/ip/v1/reset_password?email=jmcordoba@gmail.com",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"ip",
-								"v1",
-								"reset_password"
-							],
-							"query": [
-								{
-									"key": "email",
-									"value": "jmcordoba@gmail.com"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Reset Password",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"token\": \"{{token}}\",\n    \"new_password\": \"hola_caracola.10\",\n    \"new_password2\": \"hola_caracola.10\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/ip/v1/reset_password",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"ip",
-								"v1",
-								"reset_password"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "User Info Auth",
+					"name": "Me",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -431,6 +490,33 @@
 				},
 				{
 					"name": "All Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response status is 400\", () => {",
+									"  pm.expect(pm.response.code).to.eql(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains message\", () => {",
+									"  pm.expect(jsonData.message).to.exist;",
+									"});",
+									"",
+									"console.log(\"[DELETE] /users - response:\")",
+									"console.log(jsonData)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -682,68 +768,6 @@
 					"response": []
 				}
 			]
-		},
-		{
-			"name": "Status",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Juanma\",\n    \"email\": \"jmcordoba@gmail.com\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:8080/health/v1/status",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"health",
-						"v1",
-						"status"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Hello",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Juanma\",\n    \"email\": \"jmcordoba@gmail.com\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "localhost:8080/hello",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"hello"
-					]
-				}
-			},
-			"response": []
 		}
 	]
 }
