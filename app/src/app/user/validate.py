@@ -8,7 +8,7 @@ from src.infra.email.gmail import Sender
 from src.infra.shared.conf import Config
 
 from src.infra.user.sqlite import User
-from exceptions import UserValidationError
+from exceptions import UserValidationError, EmailValidationError
 
 @dataclass
 class UserValidate:
@@ -25,7 +25,7 @@ class UserValidate:
             token = request.args.get('token')
 
             if not uuid or not token:
-                return {"message": "Email and token are required"}, 400
+                raise EmailValidationError("Email and token are required")
 
             user = User()
             user_info = user.get_user_by_token(uuid, token)
@@ -48,12 +48,11 @@ class UserValidate:
                 "message": "User validated successfully",
                 "user_uuid": user_uuid
             }
-        
-            return data, 200
+            return data
 
         except UserValidationError as e:
-            return {"message": "Invalid token or uuid"}, 400
-
+            raise UserValidationError(str(e))
+        except EmailValidationError as e:
+            raise EmailValidationError(str(e))
         except Exception as e:
-            print(f"An error occurred: {e}")
-            return {"message": "An error occurred while validating the user"}, 400
+            raise Exception(str(e))

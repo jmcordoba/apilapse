@@ -104,8 +104,27 @@ class User:
         """
         db.execute_query(QUERY, (updated_at, user_uuid,))
 
+    def get_user_by_email(self, email):
+        """
+        Get the user by email
+        """
+        # Check if the user exists and the password matches
+        QUERY = """
+        SELECT id, uuid, name, email FROM users WHERE email = ? AND enabled=1
+        """
 
-    def get_user_by_email(self, email, password):
+        conf = Config()
+        config = conf.get_config()
+        db = Database(config['database_name'])
+        db.create_connection()
+
+        cursor = db.conn.cursor()
+        cursor.execute(QUERY, (email,))
+        user = cursor.fetchone()
+
+        return user
+
+    def get_user_by_email_and_password(self, email, password):
         """
         Get the user by email
         """
@@ -278,8 +297,9 @@ class User:
         db.execute_query(QUERY, ())
     
     def is_current_password_correct(self, user_uuid, hashed_current_password):
-
-        # Check if the user exists and the password matches
+        '''
+        Check if the user exists and the password matches
+        '''
         QUERY = """
         SELECT id FROM users WHERE uuid = ? AND password = ?
         """
@@ -296,8 +316,9 @@ class User:
         return data
 
     def update_current_password(self, user_uuid, hashed_new_password):
-
-        # Update the user to set validated
+        '''
+        Update the user to set validated
+        '''
         updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         QUERY = """

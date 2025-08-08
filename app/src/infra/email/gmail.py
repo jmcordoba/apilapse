@@ -50,6 +50,7 @@ class Sender:
 
             print("Email sent successfully")
             return True
+        
         except Exception as e:
             print(f"Failed to send email: {e}")
             return False
