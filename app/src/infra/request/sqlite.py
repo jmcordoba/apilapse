@@ -43,7 +43,7 @@ class Request:
         user = db.fetch_one(QUERY, (user_uuid,))
 
         if not user:
-            raise UserValidationError("There is no users to delete")
+            raise UserValidationError("There is no user with this uuid: {user_uuid}")
 
         # print(f"user_uuid: {user_uuid}")
         # print(f"user: {user[0]}")
