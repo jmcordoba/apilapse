@@ -22,10 +22,10 @@ def requests_v1_create_request():
     
     except UserValidationError as e:
         print(f"UserValidationError: {str(e)}")
-        return {"message": str(e)}, 401
+        return {"message": str(e)}, 401, {'Access-Control-Allow-Origin':'*'}
     except RequestValidationError as e:
         print(f"RequestValidationError: {str(e)}")
-        return {"message": str(e)}, 401
+        return {"message": str(e)}, 401, {'Access-Control-Allow-Origin':'*'}
     except Exception as e:
         return jsonify({"message": str(e)}), 500, {'Access-Control-Allow-Origin':'*'}
 
@@ -43,10 +43,10 @@ def requests_v1_update_request_by_id(request_uuid):
     
     except UserValidationError as e:
         print(f"UserValidationError: {str(e)}")
-        return {"message": str(e)}, 401
+        return {"message": str(e)}, 401, {'Access-Control-Allow-Origin':'*'}
     except RequestValidationError as e:
         print(f"RequestValidationError: {str(e)}")
-        return {"message": str(e)}, 401
+        return {"message": str(e)}, 401, {'Access-Control-Allow-Origin':'*'}
     except Exception as e:
         return jsonify({"message": str(e)}), 500, {'Access-Control-Allow-Origin':'*'}
 
@@ -64,13 +64,13 @@ def requests_v1_get_request_by_id(request_uuid):
     
     except AuthenticationValidationError as e:
         print(f"AuthenticationValidationError: {str(e)}")
-        return {"message": str(e)}, 401
+        return {"message": str(e)}, 401, {'Access-Control-Allow-Origin':'*'}
     except UserValidationError as e:
         print(f"UserValidationError: {str(e)}")
-        return {"message": str(e)}, 401
+        return {"message": str(e)}, 401, {'Access-Control-Allow-Origin':'*'}
     except RequestValidationError as e:
         print(f"RequestValidationError: {str(e)}")
-        return {"message": str(e)}, 401
+        return {"message": str(e)}, 401, {'Access-Control-Allow-Origin':'*'}
     except Exception as e:
         return jsonify({"message": str(e)}), 500, {'Access-Control-Allow-Origin':'*'}
 
@@ -88,13 +88,13 @@ def requests_v1_get_all():
     
     except AuthenticationValidationError as e:
         print(f"AuthenticationValidationError: {str(e)}")
-        return {"message": str(e)}, 401
+        return {"message": str(e)}, 401, {'Access-Control-Allow-Origin':'*'}
     except UserValidationError as e:
         print(f"UserValidationError: {str(e)}")
-        return {"message": str(e)}, 401
+        return {"message": str(e)}, 401, {'Access-Control-Allow-Origin':'*'}
     except RequestValidationError as e:
         print(f"RequestValidationError: {str(e)}")
-        return {"message": str(e)}, 401
+        return {"message": str(e)}, 401, {'Access-Control-Allow-Origin':'*'}
     except Exception as e:
         return jsonify({"message": str(e)}), 500, {'Access-Control-Allow-Origin':'*'}
 
@@ -111,12 +111,12 @@ def requests_v1_delete_request_by_id(request_uuid):
     
     except AuthenticationValidationError as e:
         print(f"AuthenticationValidationError: {str(e)}")
-        return {"message": str(e)}, 401
+        return {"message": str(e)}, 401, {'Access-Control-Allow-Origin':'*'}
     except UserValidationError as e:
         print(f"UserValidationError: {str(e)}")
-        return {"message": str(e)}, 401
+        return {"message": str(e)}, 401, {'Access-Control-Allow-Origin':'*'}
     except RequestValidationError as e:
         print(f"RequestValidationError: {str(e)}")
-        return {"message": str(e)}, 401
+        return {"message": str(e)}, 401, {'Access-Control-Allow-Origin':'*'}
     except Exception as e:
         return jsonify({"message": str(e)}), 500, {'Access-Control-Allow-Origin':'*'}

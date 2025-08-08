@@ -22,6 +22,7 @@ def ip_v1_signin():
         user_create = UserCreate()
         response = user_create.create(request)
         return jsonify(response), 201, {'Access-Control-Allow-Origin':'*'}
+    
     except UserValidationError as e:
         return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
     except EmailValidationError as e:
@@ -159,8 +160,9 @@ def db_get():
         user_get = UserGet()
         rows = user_get.get_all_users()
         return jsonify(rows), 200, {'Access-Control-Allow-Origin': '*'}
+    
     except UserValidationError as e:
-        return {"message": str(e)}, 400
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
 
 
 @ip.route("/user/<int:id>", methods=['DELETE'])
@@ -172,8 +174,9 @@ def delete_user(id):
         user_delete = UserDelete()
         message = user_delete.delete_user_by_id(id)
         return jsonify({"message": message}), 200, {'Access-Control-Allow-Origin': '*'}
+    
     except UserValidationError as e:
-        return {"message": str(e)}, 400
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
 
 
 @ip.route("/users", methods=['DELETE'])
@@ -185,8 +188,9 @@ def delete_all_users():
         user_delete = UserDelete()
         message = user_delete.delete_all_users()
         return jsonify({"message": message}), 200, {'Access-Control-Allow-Origin': '*'}
+    
     except UserValidationError as e:
-        return {"message": str(e)}, 400
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
 
 
 @ip.route("/change_password", methods=['POST'])
@@ -202,7 +206,7 @@ def change_password():
         
     except UserValidationError as e:
         print(f"UserValidationError: {str(e)}")
-        return {"message": str(e)}, 400
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
     except EmailValidationError as e:
         return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
     except PasswordValidationError as e:
