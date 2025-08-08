@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, render_template
+from flask import Blueprint, jsonify, request, render_template, make_response
 from src.app.user.create import UserCreate
 from src.app.user.validate import UserValidate
 from src.app.user.login import UserLogin
@@ -9,7 +9,7 @@ from src.app.user.info import Me
 from src.app.user.user_remove import UserRemove
 from src.app.user.user_get import UserGet
 
-from exceptions import UserValidationError
+from exceptions import UserValidationError, EmailValidationError, PasswordValidationError
 
 ip = Blueprint('ip', __name__)
 
@@ -18,17 +18,18 @@ def ip_v1_signin():
     """
     Create a new user.
     """
-    user_create = UserCreate()
-    response = user_create.create(request)
-
-    # Ensure response is a tuple and set default status code if not provided
-    if isinstance(response, tuple):
-        data, status_code = response
-    else:
-        data = response
-        status_code = 200
-
-    return jsonify(data), status_code, {'Access-Control-Allow-Origin':'*'}
+    try:
+        user_create = UserCreate()
+        response = user_create.create(request)
+        return jsonify(response), 201, {'Access-Control-Allow-Origin':'*'}
+    except UserValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except EmailValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except PasswordValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500, {'Access-Control-Allow-Origin':'*'}
 
 
 @ip.route("/login", methods=['POST'])
@@ -36,15 +37,24 @@ def ip_v1_login_user():
     """
     Login a user and return an access token.
     """
-    user_login = UserLogin()
-    response = user_login.login()
+    try:
+        user_login = UserLogin()
+        response = user_login.login()
+
+        resp = make_response(jsonify(response))
+        resp.set_cookie('Access-Token', response['access_token'], httponly=True, secure=False, samesite='Lax', max_age=3600)
+        resp.set_cookie('Refresh-Token', response['refresh_token'], httponly=True, secure=False, samesite='Lax', max_age=3600*24*15)
     
-    # Ensure response is a tuple and set default status code if not provided
-    if isinstance(response, tuple):
-        data, status_code = response
-        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
-    else:
-        return response
+        return resp, 200, {'Access-Control-Allow-Origin':'*'}
+    
+    except UserValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except EmailValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except PasswordValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500, {'Access-Control-Allow-Origin':'*'}
 
 
 @ip.route("/validate", methods=['GET'])
@@ -52,49 +62,69 @@ def ip_v1_validate_user():
     """
     Validate a user token.
     """
-    user_validate = UserValidate()
-    response = user_validate.validate_token()
+    try:
+        user_validate = UserValidate()
+        response = user_validate.validate_token()
 
-    # Ensure response is a tuple and set default status code if not provided
-    if isinstance(response, tuple):
-        data, status_code = response
-        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
-    else:
-        return response
-    
+        return jsonify(response), 200, {'Access-Control-Allow-Origin': '*'}
+         
+    except UserValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except EmailValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except PasswordValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500, {'Access-Control-Allow-Origin':'*'}
+   
 
 @ip.route("/me", methods=['GET'])
 def ip_v1_me():
     """
     Retrieve user information using the Access Token from the cookie.
     """
-    me = Me()
-    response = me.info()
-    
-    # Ensure response is a tuple and set default status code if not provided
-    if isinstance(response, tuple):
-        data, status_code = response
-        print(status_code)
-        print(jsonify(data))
-        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
-    else:
-        return response
+    try:
+        me = Me()
+        response, access_token, refresh_token = me.info()
 
+        # Create response
+        resp = make_response(jsonify(response), 200)
+        resp.set_cookie('Access-Token', access_token, httponly=True, secure=True, samesite='Lax')
+        resp.set_cookie('Refresh-Token', refresh_token, httponly=True, secure=True, samesite='Lax')
+
+        # Return the response with cookies set
+        return resp, 200, {'Access-Control-Allow-Origin': '*'}
+
+    except UserValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except EmailValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except PasswordValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500, {'Access-Control-Allow-Origin':'*'}
+   
 
 @ip.route("/me", methods=['DELETE'])
 def ip_v1_remove_user():
     """
     Remove a user using the Access Token or Refresh Token from the cookie.
     """
-    user_remove = UserRemove()
-    response = user_remove.remove_user()
-    
-    # Ensure response is a tuple and set default status code if not provided
-    if isinstance(response, tuple):
-        data, status_code = response
-        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
-    else:
-        return response
+    try:
+        user_remove = UserRemove()
+        response = user_remove.remove_user()
+ 
+        return jsonify(response), 200, {'Access-Control-Allow-Origin': '*'}
+
+    except UserValidationError as e:
+        print(f"UserValidationError: {str(e)}")
+        return {"message": str(e)}, 400
+    except EmailValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except PasswordValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500, {'Access-Control-Allow-Origin':'*'}
 
 
 @ip.route("/user/<int:id>", methods=['GET'])
@@ -106,9 +136,18 @@ def ip_v1_user_by_id(id):
     try:
         user_get = UserGet()
         row = user_get.get_user_by_id(id)
+
         return jsonify(row), 200, {'Access-Control-Allow-Origin': '*'}
+    
     except UserValidationError as e:
+        print(f"UserValidationError: {str(e)}")
         return {"message": str(e)}, 400
+    except EmailValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except PasswordValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500, {'Access-Control-Allow-Origin':'*'}
 
 
 @ip.route("/users", methods=['GET'])
@@ -155,15 +194,21 @@ def change_password():
     """
     Change the user's password using the Access Token from the cookie.
     """
-    user_change_password = UserChangePassword()
-    response = user_change_password.change_password()
-    
-    # Ensure response is a tuple and set default status code if not provided
-    if isinstance(response, tuple):
-        data, status_code = response
-        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
-    else:
-        return response
+    try:
+        user_change_password = UserChangePassword()
+        response = user_change_password.change_password()
+        
+        return jsonify(response), 200, {'Access-Control-Allow-Origin': '*'}
+        
+    except UserValidationError as e:
+        print(f"UserValidationError: {str(e)}")
+        return {"message": str(e)}, 400
+    except EmailValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except PasswordValidationError as e:
+        return jsonify({"message": str(e)}), 400, {'Access-Control-Allow-Origin':'*'}
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500, {'Access-Control-Allow-Origin':'*'}
 
 
 @ip.route("/logout", methods=['POST'])
@@ -171,13 +216,12 @@ def logout_user():
     """
     Logout a user and remove all cookies.
     """
-    user_logout = UserLogout()
-    response = user_logout.logout()
+    try:
+        user_logout = UserLogout()
+        response = user_logout.logout()
+        
+        return response, 200, {'Access-Control-Allow-Origin': '*'}
     
-    # Ensure response is a tuple and set default status code if not provided
-    if isinstance(response, tuple):
-        data, status_code = response
-        return jsonify(data), status_code, {'Access-Control-Allow-Origin': '*'}
-    else:
-        return response
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500, {'Access-Control-Allow-Origin':'*'}
 

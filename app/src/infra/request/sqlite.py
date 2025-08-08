@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from src.infra.sqlite3 import Database
 from src.infra.shared.conf import Config
 
+from exceptions import RequestValidationError, UserValidationError
+
 @dataclass
 class Request:
     """
@@ -33,25 +35,22 @@ class Request:
         SELECT account_uuid FROM users WHERE uuid = ?
         """
 
-        print(f"User UUID: {user_uuid}")
+        conf = Config()
+        config = conf.get_config()
+        db = Database(config['database_name'])
+        db.create_connection()
 
-        # conf = Config()
-        # config = conf.get_config()
-        # db = Database(config['database_name'])
-        # db.create_connection()
+        user = db.fetch_one(QUERY, (user_uuid,))
 
-        # cursor = db.conn.cursor()
-        # cursor.execute(QUERY, (user_uuid,))
-        # user = cursor.fetchone()
+        if not user:
+            raise UserValidationError("There is no users to delete")
 
-        # if not user:
-        #     raise UserValidationError("There is no users to delete")
+        # print(f"user_uuid: {user_uuid}")
+        # print(f"user: {user[0]}")
 
-        # print(f"User found: {user}")
+        account_uuid = user[0]
 
-        #account_uuid = user[0]
-
-        return "hol"
+        return account_uuid
     
     def get_account_uuid_from_request_uuid(self, request_uuid, account_uuid):
         """
@@ -65,6 +64,9 @@ class Request:
         cursor = self.db.conn.cursor()
         cursor.execute(CHECK_QUERY, (request_uuid, account_uuid))
         account = cursor.fetchone()
+
+        if not account:
+            raise RequestValidationError(f"There is no request_uuid {request_uuid} for the account_uuid {account_uuid}")
 
         return account
     
@@ -91,7 +93,7 @@ class Request:
         data={
             "message": "Request created successfully",
             "request_uuid": request_uuid
-        }, 201
+        }
 
         return data
 
@@ -113,7 +115,7 @@ class Request:
         data={
             "message": "Request updated successfully",
             "request_uuid": request_uuid
-        }, 200
+        }
         
         return data
     
@@ -131,9 +133,7 @@ class Request:
         request_row = cursor.fetchone()
 
         if not request_row:
-            return {
-                "message": "No matching request found for the given request_uuid"
-            }, 404
+            raise RequestValidationError("No matching request found for the given request_uuid")
 
         # Convert the row to a dictionary
         columns = [column[0] for column in cursor.description]
@@ -142,7 +142,7 @@ class Request:
         data={
             "message": "Request obtained successfully",
             "data": request_data
-        }, 200
+        }
 
         return data
 
@@ -160,9 +160,7 @@ class Request:
         request_rows = cursor.fetchall()
 
         if not request_rows:
-            return {
-                "message": "No requests found for the given account_uuid"
-            }, 404
+            raise RequestValidationError("No requests found for the given account_uuid")
 
         # Convert the rows to a list of dictionaries
         columns = [column[0] for column in cursor.description]
@@ -171,7 +169,7 @@ class Request:
         data={
             "message": "Requests obtained successfully",
             "data": request_data
-        }, 200
+        }
 
         return data
 
@@ -186,9 +184,7 @@ class Request:
         request_row = cursor.fetchone()
 
         if not request_row:
-            return {
-                "message": "No matching request found for the given request_uuid"
-            }, 404
+            raise RequestValidationError("No matching request found for the given request_uuid")
 
         # Delete the request row
         DELETE_QUERY = """
@@ -204,6 +200,6 @@ class Request:
 
         data={
             "message": "Request deleted successfully"
-        }, 200
+        }
 
         return data

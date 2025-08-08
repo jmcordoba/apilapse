@@ -56,8 +56,15 @@ class UserCreate:
             # Generate dates
             created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             
-            # Create a new user
+            # Creates an instance of User
             user = User()
+
+            # check if an active user exists with the provided email
+            user_info = user.get_user_by_email(email)
+            if user_info:
+                raise EmailValidationError("Email already exists")
+
+            # Create a new user
             user.create_user(user_uuid, account_uuid, name, email, hashed_password, hashed_token, created_at)
 
             # Create a new account
@@ -78,17 +85,11 @@ class UserCreate:
                 "token" : token
             }
 
-            return data, 201
+            return data
 
         except EmailValidationError as e:
-            return {"message": str(e)}, 400
-        
+            raise EmailValidationError(str(e))
         except PasswordValidationError as e:
-            return {"message": str(e)}, 400
-
+            raise PasswordValidationError(str(e))
         except Exception as e:
-            print(f"An error occurred: {e}")
-            data = {
-                "message": "An error occurred while inserting the user"
-            }
-            return data, 500
+            raise Exception(str(e))

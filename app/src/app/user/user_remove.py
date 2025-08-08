@@ -26,7 +26,7 @@ class UserRemove:
             refresh_token = request.cookies.get('Refresh-Token')
 
             if not access_token and not refresh_token:
-                return {"message": "Access Token or Refresh Token is required"}, 401
+                raise UserValidationError("Access Token or Refresh Token is required")
 
             # Load the configuration from the Config class
             conf = Config()
@@ -42,9 +42,9 @@ class UserRemove:
                     payload = jwt.decode(refresh_token, secret_key, algorithms=['HS256'])
                 user_uuid = payload['user_uuid']
             except jwt.ExpiredSignatureError:
-                return {"message": "Token has expired"}, 401
+                raise UserValidationError("Token has expired")
             except jwt.InvalidTokenError:
-                return {"message": "Invalid Token"}, 401
+                raise UserValidationError("Invalid Token")
 
 
             # Create a User instance to interact with the database
@@ -64,28 +64,23 @@ class UserRemove:
                 "account_uuid": data[6]
             }
 
-            account_data = account.get_active_account_by_uuid(user_data['account_uuid'])
-            print("Account data: ", account_data)
+            # Check if the user exists
+            account.get_active_account_by_uuid(user_data['account_uuid'])
 
+            # Disable the user
             user.disable_user_by_uuid(user_data['uuid'])
-            print("User disabled successfully")
 
+            # Mark the account as removed
             account.update_account_as_removed_by_uuid(user_data['account_uuid'])
-            print("Account set as removed successfully")
-
 
             # Create response
-            response = {"message": "User disabled and account marked as removed successfully"}
-            resp = make_response(jsonify(response), 200)
-
-            return resp
+            return {"message": "User disabled and account set as removed successfully"}
 
         except UserValidationError as e:
             print(f"An error occurred: {e}")
-            return {"message": str(e)}, 401
-
+            return {"message": str(e)}
         except Exception as e:
             print(f"An error occurred: {e}")
-            return {"message": "An error occurred while removing the user"}, 500
+            return {"message": "An error occurred while removing the user"}
         
 

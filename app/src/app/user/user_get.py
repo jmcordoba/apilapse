@@ -8,6 +8,8 @@ from src.infra.sqlite3 import Database
 from src.infra.shared.conf import Config
 from src.infra.user.sqlite import User
 
+from exceptions import EmailValidationError, PasswordValidationError, UserValidationError
+
 @dataclass
 class UserGet:
     """
@@ -53,6 +55,9 @@ class UserGet:
         except sqlite3.Error as e:
             print(f"SQLite error occurred: {e}")
             return None
+        except UserValidationError as e:
+            print(f"An error occurred: {e}")
+            return {"message": str(e)}
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
             return None

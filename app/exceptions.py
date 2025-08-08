@@ -57,3 +57,7 @@ class UserValidationError(Exception):
 class AccountValidationError(Exception):
     """Exception raised for account validation errors."""
     pass
+
+class RequestValidationError(Exception):
+    """Exception raised for request validation errors."""
+    pass

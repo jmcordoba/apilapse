@@ -32,8 +32,10 @@ class Authentication:
             payload = jwt.decode(access_token, secret_key, algorithms=['HS256'])
             user_uuid = payload['user_uuid']
         except jwt.ExpiredSignatureError:
-            return {"message": "Token has expired"}, 401
+            #return {"message": "Token has expired"}, 401
+            raise AuthenticationValidationError("Token has expired")
         except jwt.InvalidTokenError:
-            return {"message": "Invalid Token"}, 401
+            #return {"message": "Invalid Token"}, 401
+            raise AuthenticationValidationError("Invalid Token")
 
         return user_uuid

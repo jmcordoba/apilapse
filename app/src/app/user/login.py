@@ -12,8 +12,7 @@ from src.infra.user.sqlite import User
 
 from src.infra.shared.form_params import FormParams
 
-from exceptions import PasswordValidationError
-from exceptions import EmailValidationError
+from exceptions import PasswordValidationError, EmailValidationError, UserValidationError
 
 @dataclass
 class UserLogin:
@@ -39,59 +38,55 @@ class UserLogin:
 
             # Get the user information
             user = User()
-            user_info = user.get_user_by_email(email, password)
+            user_info = user.get_user_by_email_and_password(email, password)
+
+            print(f"User info: {user_info}")
 
             # Validate email and password
-            if user_info:
-                user_id, user_uuid, name, email = user_info
+            if user_info is None:
+                raise UserValidationError("Invalid email or password")
 
-                # Generate an access token
-                payload = {
-                    'user_uuid': user_uuid,
-                    'exp': datetime.utcnow() + timedelta(hours=1)
-                }
-                
-                # Get secret key from the configuration
-                secret_key = config['secret_key']
-                
-                access_token = jwt.encode(payload, secret_key, algorithm='HS256')
+            user_id, user_uuid, name, email = user_info
 
-                # Generate a refresh token
-                refresh_payload = {
-                    'user_uuid': user_uuid,
-                    'exp': datetime.utcnow() + timedelta(days=15)
-                }
-                refresh_token = jwt.encode(refresh_payload, secret_key, algorithm='HS256')
+            # Generate an access token
+            payload = {
+                'user_uuid': user_uuid,
+                'exp': datetime.utcnow() + timedelta(hours=1)
+            }
+            
+            # Get secret key from the configuration
+            secret_key = config['secret_key']
+            
+            access_token = jwt.encode(payload, secret_key, algorithm='HS256')
 
-                # Create response
-                response = {
-                    "message": "Login successful",
-                    "access_token": access_token,
-                    "refresh_token": refresh_token
-                }
+            # Generate a refresh token
+            refresh_payload = {
+                'user_uuid': user_uuid,
+                'exp': datetime.utcnow() + timedelta(days=15)
+            }
+            refresh_token = jwt.encode(refresh_payload, secret_key, algorithm='HS256')
 
-                # Send an email notification
-                sender = Sender()
-                to_email = 'jmcordoba@gmail.com'
-                subject = 'apilapse | login'
-                body = 'Hello '+name+',\n\n'+'You have already logged in.'+'\n\n'+'Thank you,\napilapse'
-                sender.send_email(to_email, subject, body)
+            # Create response
+            response = {
+                "message": "Login successful",
+                "access_token": access_token,
+                "refresh_token": refresh_token
+            }
 
-                # Set the access token and refresh token as HTTP-only cookies
-                resp = make_response(jsonify(response), 200)
-                resp.set_cookie('Access-Token', access_token, httponly=True, secure=False, samesite='Lax', max_age=3600)
-                resp.set_cookie('Refresh-Token', refresh_token, httponly=True, secure=False, samesite='Lax', max_age=3600*24*15)
+            # Send an email notification
+            sender = Sender()
+            to_email = 'jmcordoba@gmail.com'
+            subject = 'apilapse | login'
+            body = 'Hello '+name+',\n\n'+'You have already logged in.'+'\n\n'+'Thank you,\napilapse'
+            sender.send_email(to_email, subject, body)
 
-                return resp
-            else:
-                return {"message": "Invalid email or password"}, 401
+            return response
 
         except EmailValidationError as e:
-            return {"message": str(e)}, 400
-        
+            raise EmailValidationError(str(e))
         except PasswordValidationError as e:
-            return {"message": str(e)}, 400
-
+            raise PasswordValidationError(str(e))
+        except UserValidationError as e:
+            raise UserValidationError(str(e))
         except Exception as e:
-            print(f"An error occurred: {e}")
-            return {"message": "An error occurred while logging in the user"}, 500
+            raise Exception(str(e))

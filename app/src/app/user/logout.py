@@ -10,7 +10,7 @@ class UserLogout:
         """
         try:
             # Create a response object
-            resp = make_response(jsonify({"message": "Logout successful"}), 200)
+            resp = make_response(jsonify({"message": "Logout successful"}))
 
             # Remove cookies by setting their expiration dates to a past date
             cookies_to_remove = ['Access-Token', 'Refresh-Token']

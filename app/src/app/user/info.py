@@ -7,6 +7,8 @@ from src.infra.sqlite3 import Database
 from src.infra.shared.conf import Config
 from src.infra.user.sqlite import User
 
+from exceptions import UserValidationError
+
 @dataclass
 class Me:
     """
@@ -23,7 +25,7 @@ class Me:
             refresh_token = request.cookies.get('Refresh-Token')
 
             if not access_token and not refresh_token:
-                return {"message": "Access Token is required"}, 401
+                raise UserValidationError("Access Token is required")
             
             # Load the configuration from the Config class
             conf = Config()
@@ -38,18 +40,18 @@ class Me:
 
             except jwt.ExpiredSignatureError:
                 if not refresh_token:
-                    return {"message": "Refresh Token is required"}, 401
+                    raise UserValidationError("Refresh Token is required")
 
                 # Validate the Refresh Token
                 try:
                     refresh_payload = jwt.decode(refresh_token, secret_key, algorithms=['HS256'])
                     user_uuid = refresh_payload['user_uuid']
                 except jwt.ExpiredSignatureError:
-                    return {"message": "Refresh Token has expired"}, 401
+                    raise UserValidationError("Refresh Token is required")
                 except jwt.InvalidTokenError:
-                    return {"message": "Invalid Refresh Token"}, 401
+                    raise UserValidationError("Invalid Refresh Token")
             except jwt.InvalidTokenError:
-                return {"message": "Invalid Access Token"}, 401
+                raise UserValidationError("Invalid Access Token")
 
 
 
@@ -71,13 +73,9 @@ class Me:
                 "updated_at": data[5]
             }
 
-            # Create response
-            resp = make_response(jsonify(response), 200)
-            resp.set_cookie('Access-Token', access_token, httponly=True, secure=True, samesite='Lax')
-            resp.set_cookie('Refresh-Token', refresh_token, httponly=True, secure=True, samesite='Lax')
+            return response, access_token, refresh_token
 
-            return resp
-
+        except UserValidationError as e:
+            raise UserValidationError(str(e))
         except Exception as e:
-            print(f"An error occurred: {e}")
-            return {"message": "An error occurred while retrieving user information"}, 500
+            raise Exception("An error occurred while retrieving user information: {e}")
