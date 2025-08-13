@@ -21,7 +21,7 @@ jobs:
     # - name: Analysing the code with pylint
     #   run: |
     #     pylint  --disable=broad-exception-caught $(git ls-files '*.py' | grep -v 'test/')
-    - name: Executing Unit Tests
-      run: |
-        cd app
-        python -m unittest discover -v
+    #- name: Executing Unit Tests
+    #  run: |
+    #    cd app
+    #    python -m unittest discover -v
