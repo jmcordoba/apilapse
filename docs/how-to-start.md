@@ -38,6 +38,7 @@ git clone git@github.com:jmcordoba/apilapse.git
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install --upgrade pip
+cd app
 pip3 install -r requirements.txt
 ```
 
@@ -46,6 +47,7 @@ To update the application:
 ```bash
 git pull
 source .venv/bin/activate
+cd app
 pip3 install -r requirements.txt
 ```
 
