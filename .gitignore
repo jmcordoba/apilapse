@@ -100,7 +100,9 @@ celerybeat-schedule
 # Synology NAS
 .DS_Store
 
+app/conf/*
 
+.vscode
 
 # frontend app dependencies
 /frontapp/node_modules

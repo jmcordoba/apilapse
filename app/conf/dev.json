@@ -5,5 +5,5 @@
     "database_name": "db/apilapse.db",
     "email": "apilapse@gmail.com",
     "email_password": "dqxmsbvmszutksmi",
-    "secret_key": "your_secret_key"
+    "secret_key": "dqxmsbvmszutksmi"
 }
