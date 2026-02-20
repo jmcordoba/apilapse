@@ -9,3 +9,7 @@ Check [here](how-to-start.md) how to start with the project depending if you run
 # Roadmap
 
 Check the roadmap [here](roadmap.md)
+
+# Changelog
+
+Check the changelog [here](changelog.md)
