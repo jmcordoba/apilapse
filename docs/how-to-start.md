@@ -1,5 +1,27 @@
 # apilapse
 
+## Needed files
+
+You need to create the following file:
+
+```bash
+app/conf/dev.json
+```
+
+and type the following content:
+
+```json
+{
+    "host": "localhost",
+    "port": 8080,
+    "debug": true,
+    "database_name": "db/apilapse.db",
+    "email": "apilapse@gmail.com",
+    "email_password": "dqxmsbvmszutksmi",
+    "secret_key": "your-secret-key"
+}
+```
+
 ## Frontend
 
 ### Requirements
