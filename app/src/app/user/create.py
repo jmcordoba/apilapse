@@ -71,6 +71,8 @@ class UserCreate:
             account = Account()
             account.create_account(account_uuid, 'free', 'monthly', created_at)
 
+            print("User created successfully")
+
             # Send email to the customer to validate the account
             sender = Sender()
             subject = 'apilapse | validate account'

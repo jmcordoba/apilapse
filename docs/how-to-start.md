@@ -18,7 +18,8 @@ and type the following content:
     "database_name": "db/apilapse.db",
     "email": "apilapse@gmail.com",
     "email_password": "dqxmsbvmszutksmi",
-    "secret_key": "your-secret-key"
+    "secret_key": "your-secret-key",
+    "email_enabled": false
 }
 ```
 
@@ -59,8 +60,8 @@ To clone and install the application:
 git clone git@github.com:jmcordoba/apilapse.git
 python3 -m venv .venv
 source .venv/bin/activate
-python3 -m pip install --upgrade pip
 cd app
+python3 -m pip install --upgrade pip
 pip3 install -r requirements.txt
 ```
 
@@ -70,6 +71,7 @@ To update the application:
 git pull
 source .venv/bin/activate
 cd app
+pip install --upgrade pip
 pip3 install -r requirements.txt
 ```
 
@@ -83,7 +85,7 @@ To get a report of the quality of all the python scripts of a concrete directory
 find . -type f -name "*.py" | xargs pylint 
 ```
 
-## Test
+## Unit Test
 To run tests by executing the following command inside the container:
 * All tests:
 ```bash
@@ -102,6 +104,17 @@ flask run --host=0.0.0.0 --port=80
 To start the flask server executing the main python script:
 ```bash
 python3 app.py
+```
+
+## Playwright Test
+To run tests by executing the following command inside the container:
+* All tests:
+```bash
+pytest
+```
+* Specific test:
+```bash
+pytest tests/test_general.py
 ```
 
 ## Docker commands

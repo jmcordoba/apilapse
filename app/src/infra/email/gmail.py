@@ -21,6 +21,7 @@ class Sender:
         # Get the email credentials from the configuration file
         self.gmail_user = config['email']
         self.gmail_password = config['email_password']
+        self.email_enabled = config.get('email_enabled', False)
 
     def send_email(self, to_email, subject, body):
         """
@@ -32,24 +33,36 @@ class Sender:
         :return: True if the email was sent successfully, False otherwise.
         """
         try:
-            # Create the email message
-            msg = MIMEMultipart()
-            msg['From'] = self.gmail_user
-            msg['To'] = to_email
-            msg['Subject'] = subject
-            msg.attach(MIMEText(body, 'plain'))
+            if self.email_enabled:
+                # Create the email message
+                msg = MIMEMultipart()
+                msg['From'] = self.gmail_user
+                msg['To'] = to_email
+                msg['Subject'] = subject
+                msg.attach(MIMEText(body, 'plain'))
 
-            # Connect to the Gmail SMTP server
-            server = smtplib.SMTP('smtp.gmail.com', 587)
-            server.starttls()
-            server.login(self.gmail_user, self.gmail_password)
+                # Connect to the Gmail SMTP server
+                server = smtplib.SMTP('smtp.gmail.com', 587)
 
-            # Send the email
-            server.send_message(msg)
-            server.quit()
+                print("Connecting to Gmail SMTP server 1...")
 
-            print("Email sent successfully")
-            return True
+                server.starttls()
+
+                print("Connecting to Gmail SMTP server 2...")
+
+                server.login(self.gmail_user, self.gmail_password)
+
+                print("Connected to Gmail SMTP server")
+
+                # Send the email
+                server.send_message(msg)
+                server.quit()
+
+                print("Email sent successfully")
+                return True
+            else:
+                print("Email sending is disabled in the configuration.")
+                return True
         
         except Exception as e:
             print(f"Failed to send email: {e}")

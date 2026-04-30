@@ -17,3 +17,5 @@ pylint==3.2.6
 tomlkit==0.13.2
 Werkzeug==3.0.3
 zipp==3.20.0
+pytest-playwright
+playwright
